@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom'
 const App = () => {
   const course = {
     name: 'Half Stack application development',
-    lesson: [
+    lessons: [
       {
         name: "Fundamentals of React",
         exercises: 10
@@ -23,8 +23,8 @@ const App = () => {
   return (
     <div>
       <Header course={course} />
-      <Content course={course} />
-      <Total course={course} />
+      <Content lessons={course.lessons} />
+      <Total lessons={course.lessons} />
     </div>
   )
 }
@@ -38,20 +38,29 @@ const Header = (props) => {
 const Content = (props) => {
   return (
     <>
-      <p>{props.course.lesson[0].name} {props.course.lesson[0].exercises}</p>
-      <p>{props.course.lesson[1].name} {props.course.lesson[1].exercises}</p>
-      <p>{props.course.lesson[2].name} {props.course.lesson[2].exercises}</p>
+      <Part lesson={props.lessons[0]} />
+      <Part lesson={props.lessons[1]} />
+      <Part lesson={props.lessons[2]} />
     </>
+  )
+}
+
+const Part = (props) => {
+  return (
+    <div>
+      <p>
+        {props.lesson.name} {props.lesson.exercises}
+      </p>
+    </div>
   )
 }
 
 const Total = (props) => {
   let exerciseAmount = 0;
 
-  props.course.lesson.forEach(item => {
+  props.lessons.forEach(item => {
     exerciseAmount += item.exercises;
   })
-  console.log(exerciseAmount);
 
   return (
     <p>Number of exercises {exerciseAmount}</p>
