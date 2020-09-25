@@ -4,7 +4,9 @@ import ReactDOM from 'react-dom'
 
 const Button = ({handler, name}) => <button onClick={handler}>{name}</button>
 
-const Statics = ({feedback}) => {
+const Static = ({text, value}) => <p>{text}: {value}</p>
+
+const Statistic = ({feedback}) => {
   const good = feedback[0].value;
   const neutral = feedback[1].value;
   const bad = feedback[2].value;
@@ -21,12 +23,13 @@ const Statics = ({feedback}) => {
   return (
     <div>
       <h1>Statics</h1>
-      <p>Good: {good}</p>
-      <p>Neutral: {neutral}</p>
-      <p>Bad: {bad}</p>
-      <p>All: {good + neutral + bad}</p>
-      <p>Average: {(good - bad) / (good + neutral + bad)}</p>
-      <p>Positive: {(good / (good + neutral + bad)) * 100} %</p>
+
+      <Static text="Good" value={good} />
+      <Static text="Neutral" value={neutral} />
+      <Static text="Bad" value={bad} />
+      <Static text="All" value={good + neutral + bad} />
+      <Static text="Average" value={(good - bad) / (good + bad + neutral)} />
+      <Static text="Positive" value={(good / (bad + good + neutral)) * 100} />
     </div>
   )
 }
@@ -59,7 +62,7 @@ const App = () => {
       <Button handler={handleGoodFeedback} name="Good" />
       <Button handler={handleNeutralFeedback} name="Neutral" />
       <Button handler={handleBadFeedback} name="Bad" />
-      <Statics feedback={feedback} />
+      <Statistic feedback={feedback} />
     </div>
   )
 }
