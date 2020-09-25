@@ -9,6 +9,15 @@ const Statics = ({feedback}) => {
   const neutral = feedback[1].value;
   const bad = feedback[2].value;
 
+  if ( (good + neutral + bad) <= 0 ) {
+    return (
+      <div>
+        <h1>Statics</h1>
+        <p>No feedback given</p>
+      </div>
+    )
+  }
+
   return (
     <div>
       <h1>Statics</h1>
