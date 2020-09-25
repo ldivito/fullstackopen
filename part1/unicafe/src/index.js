@@ -10,10 +10,24 @@ const App = () => {
   const [good, setGood] = useState(0)
   const [neutral, setNeutral] = useState(0)
   const [bad, setBad] = useState(0)
+  const [all, setAll] = useState(0)
+  const [avg, setAvg] = useState(0)
 
-  const handleGoodFeedback = () => setGood(good + 1)
-  const handleNeutralFeedback = () => setNeutral(neutral + 1)
-  const handleBadFeedback = () => setBad(bad + 1)
+  const handleGoodFeedback = () => {
+    setGood(good + 1)
+    setAll(all + 1)
+    setAvg(avg + 1)
+  }
+  const handleNeutralFeedback = () => {
+    setNeutral(neutral + 1)
+    setAll(all + 1)
+    setAvg(avg + 0)
+  }
+  const handleBadFeedback = () => {
+    setBad(bad + 1)
+    setAll(all + 1)
+    setAvg(avg - 1)
+  }
 
   return (
     <div>
@@ -25,6 +39,9 @@ const App = () => {
       <p>Good: {good}</p>
       <p>Neutral: {neutral}</p>
       <p>Bad: {bad}</p>
+      <p>All: {all}</p>
+      <p>Average: {avg / all}</p>
+      <p>Positive: {(good / all) * 100} %</p>
     </div>
   )
 }
