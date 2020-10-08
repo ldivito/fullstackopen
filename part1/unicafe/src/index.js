@@ -4,34 +4,40 @@ import ReactDOM from 'react-dom'
 
 const Button = ({handler, name}) => <button onClick={handler}>{name}</button>
 
-const Static = ({text, value}) => <p>{text}: {value}</p>
+const Statistic = ({text, value}) => {
+  return (
+    <>
+      <tr>
+        <td>{text}</td>
+        <td>{value}</td>
+      </tr>
+    </>
+  )
+}
 
-const Statistic = ({feedback}) => {
-  const good = feedback[0].value;
-  const neutral = feedback[1].value;
-  const bad = feedback[2].value;
+const Statistics = ({feedback}) => {
+  const good = feedback[0].value
+  const neutral = feedback[1].value
+  const bad = feedback[2].value
+  const all = good + neutral + bad
+  let average = 0
+  let positive = 0
 
-  if ( (good + neutral + bad) <= 0 ) {
+  if (all !== 0) {
+    average = (good*1 + neutral*0 + bad*(-1)) / all
+    positive = good / all * 100
     return (
-      <div>
-        <h1>Statics</h1>
-        <p>No feedback given</p>
-      </div>
+      <>
+        <Statistic text="good" value={good} />
+        <Statistic text="neutral" value={neutral} />
+        <Statistic text="bad" value={bad} />
+        <Statistic text="all" value={all} />
+        <Statistic text="average" value={average} />
+        <Statistic text="positive" value={positive + " %"} />
+      </>
     )
   }
-
-  return (
-    <div>
-      <h1>Statics</h1>
-
-      <Static text="Good" value={good} />
-      <Static text="Neutral" value={neutral} />
-      <Static text="Bad" value={bad} />
-      <Static text="All" value={good + neutral + bad} />
-      <Static text="Average" value={(good - bad) / (good + bad + neutral)} />
-      <Static text="Positive" value={(good / (bad + good + neutral)) * 100} />
-    </div>
-  )
+  return <p>No feedback given</p>
 }
 
 const App = () => {
@@ -62,7 +68,7 @@ const App = () => {
       <Button handler={handleGoodFeedback} name="Good" />
       <Button handler={handleNeutralFeedback} name="Neutral" />
       <Button handler={handleBadFeedback} name="Bad" />
-      <Statistic feedback={feedback} />
+      <Statistics feedback={feedback} />
     </div>
   )
 }
