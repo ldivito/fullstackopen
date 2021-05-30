@@ -4,7 +4,7 @@ import React from "react";
 const PersonList = ({persons}) => {
 
   return (
-    persons.map(person => <Person person={person} />)
+    persons.map(person => <Person key={person.id} person={person} />)
   )
 }
 
