@@ -8,15 +8,14 @@ const CountriesList = ({countries}) => {
     if(countries.length === 1) {
      return (
        <div>
-        <h1><Country country={countries[0]} /></h1>
         <CountryInfo country={countries[0]} />
        </div>
      )
     }
     return (
-      <div>
+      <ul>
         {countries.map(country => <Country country={country} /> )}
-      </div>
+      </ul>
     )
   }
   return (

@@ -23,9 +23,7 @@ const App = () => {
   return (
     <div>
       <Search value={newCountriesFilter} eventHandler={handleCountriesFilter} />
-      <ul>
-        <CountriesList countries={countries.filter(value => value.name.toLowerCase().match(newCountriesFilter.toLowerCase()))} />
-      </ul>
+      <CountriesList countries={countries.filter(value => value.name.toLowerCase().match(newCountriesFilter.toLowerCase()))} />
     </div>
   )
 }
