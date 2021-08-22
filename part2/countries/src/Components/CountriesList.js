@@ -2,19 +2,21 @@ import React from "react";
 import Country from "./Country";
 import CountryInfo from "./CountryInfo";
 
-const CountriesList = ({countries}) => {
+const CountriesList = ({countries, maxDisplay = 10}) => {
 
-  if (countries.length < 10) {
+  const handleClick = (country) => {
+    return (<CountryInfo country={country} />)
+  }
+
+  if (countries.length < maxDisplay) {
     if(countries.length === 1) {
      return (
-       <div>
-        <CountryInfo country={countries[0]} />
-       </div>
+       <CountryInfo country={countries[0]} />
      )
     }
     return (
       <ul>
-        {countries.map(country => <Country country={country} /> )}
+        {countries.map(country => <Country country={country} handleClick={handleClick} /> )}
       </ul>
     )
   }
