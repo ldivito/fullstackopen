@@ -1,9 +1,9 @@
 import React from "react";
 
-const Country = ({country,handleClick}) => {
+const Country = ({country,handleCountriesFilter}) => {
   return (
     <li style={{listStyleType: "none"}} key={country.id}>
-      {country.name} <button onClick={handleClick(country)}>show</button>
+      {country.name} <button value={country.name} onClick={handleCountriesFilter} >show</button>
     </li>
   )
 }

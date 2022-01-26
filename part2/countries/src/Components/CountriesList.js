@@ -2,11 +2,7 @@ import React from "react";
 import Country from "./Country";
 import CountryInfo from "./CountryInfo";
 
-const CountriesList = ({countries, maxDisplay = 10}) => {
-
-  const handleClick = (country) => {
-    return (<CountryInfo country={country} />)
-  }
+const CountriesList = ({countries, maxDisplay = 10, handleCountriesFilter}) => {
 
   if (countries.length < maxDisplay) {
     if(countries.length === 1) {
@@ -16,7 +12,7 @@ const CountriesList = ({countries, maxDisplay = 10}) => {
     }
     return (
       <ul>
-        {countries.map(country => <Country country={country} handleClick={handleClick} /> )}
+        {countries.map(country => <Country country={country} handleCountriesFilter={handleCountriesFilter} /> )}
       </ul>
     )
   }
