@@ -41,6 +41,15 @@ const App = () => {
       )
   }
 
+  const handleDeletePerson = (event) => {
+    event.preventDefault()
+    personService
+      .deletePerson(event.target.value)
+      .then (
+        setPersons(persons.filter(p => p.id != event.target.value))
+      )
+  }
+
   const handleNewPerson = (event) => {
     setNewName(event.target.value)
   }
@@ -67,7 +76,7 @@ const App = () => {
       <Form addPerson={addPerson} nameValue={newName} personEventHandler={handleNewPerson} numberValue={newNumber} numberEventHandler={handleNewNumber}/>
       <h3>Numbers</h3>
       <ul>
-       <PersonList persons={persons.filter(value => value.name.toLowerCase().match(newNameFilter.toLowerCase()))}/>
+       <PersonList eventHandler={handleDeletePerson} persons={persons.filter(value => value.name.toLowerCase().match(newNameFilter.toLowerCase()))}/>
       </ul>
     </div>
   )
