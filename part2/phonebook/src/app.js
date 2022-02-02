@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react'
 import Filter from "./components/filter";
 import Form from "./components/form";
 import PersonList from "./components/personList";
+import personService from './Services/persons';
 import axios from "axios";
 
 const App = () => {
@@ -11,11 +12,11 @@ const App = () => {
   const [ newNameFilter, setNewNameFilter ] = useState('')
 
   useEffect(() => {
-    axios
-      .get('http://localhost:3000/persons')
-      .then(response => {
-        setPersons(response.data)
-      })
+    personService
+      .getAll()
+      .then(initialPersons => {
+        setPersons(initialPersons)
+    })
   }, [])
 
   const addPerson = (event) => {
@@ -29,13 +30,15 @@ const App = () => {
       number: newNumber,
       id: persons[persons.length - 1].id + 1
     }
-    axios
-      .post('http://localhost:3000/persons',personObject)
-      .then(response => {
-        setPersons(persons.concat(personObject))
+
+    personService
+      .create(personObject)
+      .then(returnedPerson => {
+        setPersons(persons.concat(returnedPerson))
         setNewName('')
         setNewNumber('')
-      })
+        }
+      )
   }
 
   const handleNewPerson = (event) => {
