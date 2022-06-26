@@ -3,7 +3,6 @@ import Filter from "./components/filter";
 import Form from "./components/form";
 import PersonList from "./components/personList";
 import personService from './Services/persons';
-import axios from "axios";
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
@@ -43,11 +42,13 @@ const App = () => {
 
   const handleDeletePerson = (event) => {
     event.preventDefault()
-    personService
-      .deletePerson(event.target.value)
-      .then (
-        setPersons(persons.filter(p => p.id != event.target.value))
-      )
+    if (window.confirm(`Delete ${persons.find(person => person.id == event.target.value).name}?`)) {
+      personService
+        .deletePerson(event.target.value)
+        .then(
+          setPersons(persons.filter(p => p.id != event.target.value))
+        )
+    }
   }
 
   const handleNewPerson = (event) => {
