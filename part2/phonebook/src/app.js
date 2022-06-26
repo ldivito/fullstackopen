@@ -21,7 +21,21 @@ const App = () => {
   const addPerson = (event) => {
     event.preventDefault()
     if (checkDuplicate(persons, newName)) {
-      alert(`${newName} is already added to phonebook`)
+      const originalPerson = persons.find(original => original.name == newName)
+      if (window.confirm(`${originalPerson.name} is already added to phonebook, replace the old number with a new one?`)) {
+        const personObject = {
+          ...originalPerson,
+          number: newNumber
+        }
+
+        personService
+          .update(personObject.id,personObject)
+          .then(
+            response => {
+              persons.map(person => person.id !== personObject.id ? person : response.data)
+            }
+          )
+      }
       return
     }
     const personObject = {
