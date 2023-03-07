@@ -4,18 +4,21 @@ import Form from "./components/form";
 import PersonList from "./components/personList";
 import personService from './Services/persons';
 
+
 const App = () => {
   const [ persons, setPersons ] = useState([])
   const [ newName, setNewName ] = useState('')
   const [ newNumber, setNewNumber ] = useState('')
   const [ newNameFilter, setNewNameFilter ] = useState('')
+  const [ addedMessage, setAddedMessage ] = useState(null)
+  const [ addedMessageType, setAddedMessageType ] = useState('')
 
   useEffect(() => {
     personService
       .getAll()
       .then(initialPersons => {
         setPersons(initialPersons)
-    })
+      })
   }, [])
 
   const addPerson = (event) => {
@@ -32,6 +35,11 @@ const App = () => {
           .update(personObject.id,personObject)
           .then(
             response => {
+              setAddedMessage(`Replaced ${originalPerson.name} number successfully.`)
+              setAddedMessageType('message-info')
+              setTimeout(() => {
+                setAddedMessage(null)
+              }, 5000)
               persons.map(person => person.id !== personObject.id ? person : response.data)
             }
           )
@@ -47,9 +55,14 @@ const App = () => {
     personService
       .create(personObject)
       .then(returnedPerson => {
-        setPersons(persons.concat(returnedPerson))
-        setNewName('')
-        setNewNumber('')
+          setPersons(persons.concat(returnedPerson))
+          setNewName('')
+          setNewNumber('')
+          setAddedMessage(`Added ${returnedPerson.name}.`)
+          setAddedMessageType('message-info')
+          setTimeout(() => {
+            setAddedMessage(null)
+          }, 5000)
         }
       )
   }
@@ -83,15 +96,31 @@ const App = () => {
     });
   }
 
+  const AddNotification = ({ message, type }) => {
+    const success = {
+    }
+
+    if (message === null) {
+      return null
+    }
+
+    return (
+      <div className={type}>
+        {message}
+      </div>
+    )
+  }
+
   return (
     <div>
       <h2>Phonebook</h2>
+      <AddNotification message={addedMessage} type={addedMessageType} />
       <Filter value={newNameFilter} eventHandler={handleNameFilter} />
       <h3>Add new contact</h3>
       <Form addPerson={addPerson} nameValue={newName} personEventHandler={handleNewPerson} numberValue={newNumber} numberEventHandler={handleNewNumber}/>
       <h3>Numbers</h3>
       <ul>
-       <PersonList eventHandler={handleDeletePerson} persons={persons.filter(value => value.name.toLowerCase().match(newNameFilter.toLowerCase()))}/>
+        <PersonList eventHandler={handleDeletePerson} persons={persons.filter(value => value.name.toLowerCase().match(newNameFilter.toLowerCase()))}/>
       </ul>
     </div>
   )
