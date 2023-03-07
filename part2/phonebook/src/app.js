@@ -43,6 +43,14 @@ const App = () => {
               persons.map(person => person.id !== personObject.id ? person : response.data)
             }
           )
+          .catch(error => {
+            setAddedMessage(`Contact ${originalPerson.name} not found, please create it again.`)
+            setAddedMessageType('message-error')
+            setTimeout(() => {
+              setAddedMessage(null)
+            }, 5000)
+            setPersons(persons.filter(p => p.id !== originalPerson.id))
+          })
       }
       return
     }
