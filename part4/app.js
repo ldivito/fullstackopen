@@ -8,6 +8,7 @@ const blogsRouter = require('./controllers/blogs')
 const logger = require('./utils/logger')
 
 mongoose.set('strictQuery', false)
+mongoose.set('useFindAndModify', false)
 
 logger.info('connecting to', config.MONGODB_URI)
 

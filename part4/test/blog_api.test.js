@@ -115,6 +115,27 @@ describe('add new blog endpoint', () => {
 	})
 })
 
+describe('delete blog post', () => {
+
+	test('can delete an existing blog post', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+		const blogIdToDelete = blogsAtStart[0].id
+
+		await api.delete('/api/blogs/' + blogIdToDelete).expect(404)
+
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length - 1)
+	})
+
+	test('deleting a non existing blog post has no effect', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+		await api.delete('/api/blogs/f3423rg123123dd123551').expect(404)
+
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+	})
+})
+
 afterAll(() => {
 	mongoose.connection.close()
 }) 
