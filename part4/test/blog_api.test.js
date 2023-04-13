@@ -20,11 +20,18 @@ describe('list all blogs endpoint', () => {
 
 		const body = response.body.map(blog => {
 			delete blog.id
-			delete blog.__v
 			return blog
 		})
 
 		expect(body).toEqual(helper.blogFixtures)
+	})
+
+	test('the blogs contain an "id" property', async () => {
+		const response = await api.get('/api/blogs')
+
+		response.body.forEach(blog => {
+			expect(blog.id).toBeDefined()
+		})
 	})
 })
 
