@@ -92,3 +92,23 @@ describe('favourite blog', () => {
 		})
 	})
 })
+
+describe('most blogs', () => {
+	test('of an empty list is null', () => {
+		expect(listHelper.mostBlogs([])).toBe(null)
+	})
+
+	test('of one is one', () => {
+		expect(listHelper.mostBlogs([blogs[1]])).toEqual({
+			author: "Edsger W. Dijkstra",
+			blogs: 1
+		})
+	})
+
+	test('of many is calculated right', () => {
+		expect(listHelper.mostBlogs(blogs)).toEqual({
+			author: "Robert C. Martin",
+			blogs: 3
+		})
+	})
+})
