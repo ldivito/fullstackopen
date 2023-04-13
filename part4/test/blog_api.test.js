@@ -40,6 +40,8 @@ describe('list all blogs endpoint', () => {
 describe('add new blog endpoint', () => {
 
 	test('can add a new blog', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+
 		const newBlog = {
 			title: 'Hello there',
 			author: 'Ben Kenobi',
@@ -57,15 +59,15 @@ describe('add new blog endpoint', () => {
 		delete post_response.body.id
 		expect(post_response.body).toEqual(newBlog)
 
-		const get_response = await api.get('/api/blogs')
-		expect(get_response.body.length).toEqual(helper.blogFixtures.length + 1)
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length + 1)
 	})
 
 	test('can add a new blog without likes and they default to 0', async () => {
 		const newBlog = {
-			title: 'I dont have likes',
-			author: 'Me',
-			url: 'http://www.google.com'
+			title: 'Fake post',
+			author: 'Olso',
+			url: 'http://www.fullstackopen.com'
 		}
 		const response = await api
 			.post('/api/blogs')
@@ -73,7 +75,43 @@ describe('add new blog endpoint', () => {
 			.expect(201)
 			.expect('Content-Type', /application\/json/)
 
-		expect(response.body.likes).toEqual(0)
+		expect(response.body.likes).toBe(0)
+	})
+
+	test('cannot add a new blog without a title', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+
+		const newBlog = {
+			author: 'Fake post',
+			url: 'http://www.fullstackopen.com'
+		}
+		const post_response = await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(400)
+
+		expect(post_response.body.error).toBeDefined()
+
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+	})
+
+	test('cannot add a new blog without a url', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+
+		const newBlog = {
+			title: 'Fake post',
+			author: 'Jhonny'
+		}
+		const post_response = await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(400)
+
+		expect(post_response.body.error).toBeDefined()
+
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
 	})
 })
 
