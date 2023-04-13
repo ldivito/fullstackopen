@@ -10,7 +10,12 @@ blogsRouter.get('/api/blogs', (request, response) => {
 })
 
 blogsRouter.post('/api/blogs', async (request, response) => {
-	const blog = new Blog(request.body)
+	const blog = new Blog({
+		title: request.body.title,
+		author: request.body.author,
+		url: request.body.url,
+		likes: request.body.likes === undefined ? 0 : request.body.likes
+	})
 
 	const result = await blog.save()
 	return response.status(201).json(result)
