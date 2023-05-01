@@ -1,5 +1,8 @@
+// Third-Party Dependencies
 const mongoose = require('mongoose')
 const supertest = require('supertest')
+
+// My Dependencies
 const app = require('../app')
 const helper = require('./test_helper')
 const Blog = require('../models/blog')
@@ -119,9 +122,11 @@ describe('delete blog post', () => {
 
 	test('can delete an existing blog post', async () => {
 		const blogsAtStart = await helper.blogsInDb()
-		const blogIdToDelete = blogsAtStart[0].id
+		const blogIdToDelete = blogsAtStart[blogsAtStart.length - 1].id
 
-		await api.delete('/api/blogs/' + blogIdToDelete).expect(404)
+		await api
+			.delete('/api/blogs/' + blogIdToDelete)
+			.expect(204)
 
 		const blogsAtEnd = await helper.blogsInDb()
 		expect(blogsAtEnd.length).toBe(blogsAtStart.length - 1)
@@ -129,13 +134,83 @@ describe('delete blog post', () => {
 
 	test('deleting a non existing blog post has no effect', async () => {
 		const blogsAtStart = await helper.blogsInDb()
-		await api.delete('/api/blogs/f3423rg123123dd123551').expect(404)
+		await api.delete('/api/blogs/5e962f0db69261c21414f95d').expect(204)
 
 		const blogsAtEnd = await helper.blogsInDb()
 		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
 	})
 })
 
-afterAll(() => {
-	mongoose.connection.close()
-}) 
+describe('update blog', () => {
+
+	test('user can update a blog', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+
+		const nBlog = {
+			title: 'New new',
+			author: 'Mee',
+			url: 'http://www.google.com',
+			likes: 10,
+		}
+		const response = await api.put('/api/blogs/' + blogsAtStart[0].id).send(nBlog)
+
+		expect(response.body.id).toBe(blogsAtStart[0].id)
+
+		delete response.body.id
+		expect(response.body).toEqual(nBlog)
+
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+
+		delete blogsAtEnd[0].id
+		expect(blogsAtEnd[0]).toEqual(nBlog)
+	})
+
+	test('cant update blog without a title', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+
+		const newBlog = {
+			author: 'Test',
+			url: 'http://www.google.com'
+		}
+		const response = await api.put('/api/blogs/' + blogsAtStart[0].id).send(newBlog)
+
+		// Make sure the user got an error message
+		expect(response.body.error).toBeDefined()
+
+		// the number of blogs in the system is unchanged
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+	})
+
+	test('cannot update an existing blog without a url', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+
+		const newBlog = {
+			title: 'Wrong',
+			author: 'Me'
+		}
+		const response = await api.put('/api/blogs/' + blogsAtStart[0].id).send(newBlog)
+
+		expect(response.body.error).toBeDefined()
+
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+	})
+
+	test('can update an existing blog without likes and they default to 0', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+		const newBlog = {
+			title: 'Another blog',
+			author: 'Lisa',
+			url: 'http://www.microsoft.com'
+		}
+		const response = await api.put('/api/blogs/' + blogsAtStart[0].id).send(newBlog)
+
+		expect(response.body.likes).toBe(0)
+	})
+})
+
+afterAll(async () => {
+	await mongoose.connection.close()
+})
