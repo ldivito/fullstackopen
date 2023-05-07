@@ -2,13 +2,11 @@
 const blogsRouter = require('express').Router()
 // My Imports
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
-blogsRouter.get('/api/blogs', (request, response) => {
-	Blog
-		.find({})
-		.then(blogs => {
-			return response.json(blogs.map(blog => blog.toJSON()))
-		})
+blogsRouter.get('/', async (request, response) => {
+	const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
+	return response.json(blogs.map(blog => blog.toJSON()))
 })
 
 blogsRouter.post('/api/blogs', async (request, response) => {
@@ -20,16 +18,24 @@ blogsRouter.post('/api/blogs', async (request, response) => {
 	if (!request.body.hasOwnProperty('url')) {
 		return response.status(400).json({error: 'Missing url property'})
 	}
-	
+
+	const allUsers = await User.find({})
+	const firstUser = allUsers[0]
+
 	const blog = new Blog({
 		title: request.body.title,
 		author: request.body.author,
 		url: request.body.url,
-		likes: request.body.likes === undefined ? 0 : request.body.likes
+		likes: request.body.likes === undefined ? 0 : request.body.likes,
+		user: firstUser._id
 	})
 
-	const result = await blog.save()
-	return response.status(201).json(result)
+	const savedBlog = await blog.save()
+
+	firstUser.blogs = firstUser.blogs.concat(savedBlog._id)
+	await firstUser.save()
+
+	return response.status(201).json(savedBlog)
 })
 
 blogsRouter.delete('/api/blogs/:id', async (request, response) => {
