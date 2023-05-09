@@ -46,11 +46,11 @@ blogsRouter.delete('/api/blogs/:id', async (request, response) => {
 blogsRouter.put('/api/blogs/:id', async (request, response) => {
 
 	if (!request.body.hasOwnProperty('title')) {
-		return response.status(400).json({error: "Missing title"})
+		return response.status(400).json({error: 'Missing title'})
 	}
 
 	if (!request.body.hasOwnProperty('url')) {
-		return response.status(400).json({error: "Missing url"})
+		return response.status(400).json({error: 'Missing url'})
 	}
 
 	const nBlog = {
