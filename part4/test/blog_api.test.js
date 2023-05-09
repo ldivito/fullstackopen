@@ -61,7 +61,7 @@ describe('add new blog endpoint', () => {
 		}
 		const post_response = await api
 			.post('/api/blogs')
-			.set('Authorization', `Bearer ${token}`)
+			.set('Authorization', `bearer ${process.env.TOKEN}`)
 			.send(newBlog)
 			.expect(201)
 			.expect('Content-Type', /application\/json/)

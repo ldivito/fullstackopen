@@ -11,13 +11,16 @@ loginRouter.post('/', async (request, response) => {
 		return response.status(401).json({ error: 'Username or Password is incorrect' })
 	}
 
-	const jwt_user = {
+	const userForToken = {
 		username: user.username,
-		id: user._id
+		id: user._id,
 	}
-	const jwt_token = jwt.sign(jwt_user, config.JWT_SECRET)
 
-	return response.status(200).json({ token: jwt_token })
+	const token = jwt.sign(userForToken, process.env.SECRET)
+
+	response
+		.status(200)
+		.send({ token, username: user.username, name: user.name })
 })
 
 module.exports = loginRouter
