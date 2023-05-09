@@ -11,18 +11,9 @@ blogsRouter.get('/', async (request, response) => {
 	return response.json(blogs.map(blog => blog.toJSON()))
 })
 
-const getTokenFrom = request => {
-	const authorization = request.get('authorization')
-	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-		return authorization.substring(7)
-	}
-	return null
-}
-
 blogsRouter.post('/api/blogs', async (request, response) => {
 
-	const token = getTokenFrom(request)
-	const decodedToken = jsonwebtoken.verify(token, config.JWT_SECRET)
+	const decodedToken = jsonwebtoken.verify(request.token, config.JWT_SECRET)
 
 	// eslint-disable-next-line no-prototype-builtins
 	if (!request.body.hasOwnProperty('title')) {
