@@ -3,13 +3,27 @@ const blogsRouter = require('express').Router()
 // My Imports
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const jsonwebtoken = require('jsonwebtoken')
+const config = require('../utils/config')
 
 blogsRouter.get('/', async (request, response) => {
 	const blogs = await Blog.find({}).populate('user', { username: 1, name: 1 })
 	return response.json(blogs.map(blog => blog.toJSON()))
 })
 
+const getTokenFrom = request => {
+	const authorization = request.get('authorization')
+	if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+		return authorization.substring(7)
+	}
+	return null
+}
+
 blogsRouter.post('/api/blogs', async (request, response) => {
+
+	const token = getTokenFrom(request)
+	const decodedToken = jsonwebtoken.verify(token, config.JWT_SECRET)
+
 	// eslint-disable-next-line no-prototype-builtins
 	if (!request.body.hasOwnProperty('title')) {
 		return response.status(400).json({error: 'Missing title property'})
@@ -19,21 +33,20 @@ blogsRouter.post('/api/blogs', async (request, response) => {
 		return response.status(400).json({error: 'Missing url property'})
 	}
 
-	const allUsers = await User.find({})
-	const firstUser = allUsers[0]
+	const loggedInUser = await User.findById(decodedToken.id)
 
 	const blog = new Blog({
 		title: request.body.title,
 		author: request.body.author,
 		url: request.body.url,
 		likes: request.body.likes === undefined ? 0 : request.body.likes,
-		user: firstUser._id
+		user: loggedInUser._id
 	})
 
 	const savedBlog = await blog.save()
 
-	firstUser.blogs = firstUser.blogs.concat(savedBlog._id)
-	await firstUser.save()
+	loggedInUser.blogs = loggedInUser.blogs.concat(savedBlog._id)
+	await loggedInUser.save()
 
 	return response.status(201).json(savedBlog)
 })
