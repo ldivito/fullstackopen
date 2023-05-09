@@ -28,7 +28,13 @@ describe('list all blogs endpoint', () => {
 			delete blog.id
 			return blog
 		})
-		expect(body).toEqual(helper.blogFixtures)
+		const fixturesWithNullUsers = helper.blogFixtures.map(blog => {
+			const newBlog = {...blog}
+			newBlog.user = null
+			return newBlog
+		})
+
+		expect(body).toEqual(fixturesWithNullUsers)
 	})
 
 	test('the blogs contain an "id" property', async () => {
@@ -44,6 +50,8 @@ describe('add new blog endpoint', () => {
 
 	test('can add a new blog', async () => {
 		const blogsAtStart = await helper.blogsInDb()
+		const usersAtStart = await helper.usersInDb()
+		const token = helper.getTokenForUser(usersAtStart[0])
 
 		const newBlog = {
 			title: 'Hello there',
@@ -53,19 +61,66 @@ describe('add new blog endpoint', () => {
 		}
 		const post_response = await api
 			.post('/api/blogs')
+			.set('Authorization', `Bearer ${token}`)
 			.send(newBlog)
 			.expect(201)
 			.expect('Content-Type', /application\/json/)
 
 		expect(post_response.body.id).toBeDefined()
 
-		delete post_response.body.id
-		expect(post_response.body).toEqual(newBlog)
+		expect(post_response.body.title).toEqual(newBlog.title)
+		expect(post_response.body.author).toEqual(newBlog.author)
+		expect(post_response.body.url).toEqual(newBlog.url)
+		expect(post_response.body.likes).toEqual(newBlog.likes)
+		expect(post_response.body.user).toEqual(usersAtStart[0].id)
 
 		const blogsAtEnd = await helper.blogsInDb()
 		expect(blogsAtEnd.length).toBe(blogsAtStart.length + 1)
 	})
 
+	test('A new blog cannot be added without a token', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+
+		const newBlog = {
+			title: 'New test blog',
+			author: 'Tester',
+			url: 'http://www.google.com',
+			likes: 12
+		}
+		const response = await api
+			.post('/api/blogs')
+			.send(newBlog)
+			.expect(401)
+			.expect('Content-Type', /application\/json/)
+
+		expect(response.body.error).toBeDefined()
+
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+	})
+
+	test('A new blog cannot be added with an invalid JWT', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+
+		const newBlog = {
+			title: 'New test blog',
+			author: 'Tester',
+			url: 'http://www.google.com',
+			likes: 12
+		}
+		const response = await api
+			.post('/api/blogs')
+			.set('Authorization', 'Bearer invalid_token')
+			.send(newBlog)
+			.expect(401)
+			.expect('Content-Type', /application\/json/)
+
+		expect(response.body.error).toBeDefined()
+
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+	})
+	
 	test('can add a new blog without likes and they default to 0', async () => {
 		const newBlog = {
 			title: 'Fake post',
@@ -74,6 +129,7 @@ describe('add new blog endpoint', () => {
 		}
 		const response = await api
 			.post('/api/blogs')
+			.set('Authorization', `Bearer ${token}`)
 			.send(newBlog)
 			.expect(201)
 			.expect('Content-Type', /application\/json/)
@@ -83,17 +139,21 @@ describe('add new blog endpoint', () => {
 
 	test('cannot add a new blog without a title', async () => {
 		const blogsAtStart = await helper.blogsInDb()
+		const usersAtStart = await helper.usersInDb()
+		const token = helper.getTokenForUser(usersAtStart[0])
 
 		const newBlog = {
 			author: 'Fake post',
 			url: 'http://www.fullstackopen.com'
 		}
-		const post_response = await api
+		const response = await api
 			.post('/api/blogs')
+			.set('Authorization', `Bearer ${token}`)
 			.send(newBlog)
 			.expect(400)
+			.expect('Content-Type', /application\/json/)
 
-		expect(post_response.body.error).toBeDefined()
+		expect(response.body.error).toBe('Missing title property')
 
 		const blogsAtEnd = await helper.blogsInDb()
 		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
@@ -101,40 +161,74 @@ describe('add new blog endpoint', () => {
 
 	test('cannot add a new blog without a url', async () => {
 		const blogsAtStart = await helper.blogsInDb()
+		const usersAtStart = await helper.usersInDb()
+		const token = helper.getTokenForUser(usersAtStart[0])
 
 		const newBlog = {
 			title: 'Fake post',
 			author: 'Jhonny'
 		}
-		const post_response = await api
+		const response = await api
 			.post('/api/blogs')
+			.set('Authorization', `Bearer ${token}`)
 			.send(newBlog)
 			.expect(400)
+			.expect('Content-Type', /application\/json/)
 
-		expect(post_response.body.error).toBeDefined()
+		expect(response.body.error).toBe('Missing url property')
 
 		const blogsAtEnd = await helper.blogsInDb()
 		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
 	})
 })
 
-describe('delete blog post', () => {
+describe('delete your blog post', () => {
 
 	test('can delete an existing blog post', async () => {
 		const blogsAtStart = await helper.blogsInDb()
 		const blogIdToDelete = blogsAtStart[blogsAtStart.length - 1].id
+		const usersAtStart = await helper.usersInDb()
+		const token = helper.getTokenForUser(usersAtStart[0])
+
 
 		await api
 			.delete('/api/blogs/' + blogIdToDelete)
+			.set('Authorization', `Bearer ${token}`)
 			.expect(204)
 
 		const blogsAtEnd = await helper.blogsInDb()
 		expect(blogsAtEnd.length).toBe(blogsAtStart.length - 1)
 	})
 
+	test('cannot delete another users blog', async () => {
+		const blogsAtStart = await helper.blogsInDb()
+		const blogIdToDelete = blogsAtStart[0].id
+		const usersAtStart = await helper.usersInDb()
+		const token = helper.getTokenForUser(usersAtStart[0])
+
+		const response = await api
+			.delete('/api/blogs/' + blogIdToDelete)
+			.set('Authorization', `Bearer ${token}`)
+			.expect(400)
+			.expect('Content-Type', /application\/json/)
+
+		// Make sure the user got an error message
+		expect(response.body.error).toBe('Only the user who posted the blog can delete it')
+
+		// the number of blogs in the system is unchanged
+		const blogsAtEnd = await helper.blogsInDb()
+		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
+	})
+
 	test('deleting a non existing blog post has no effect', async () => {
 		const blogsAtStart = await helper.blogsInDb()
-		await api.delete('/api/blogs/5e962f0db69261c21414f95d').expect(204)
+		const usersAtStart = await helper.usersInDb()
+		const token = helper.getTokenForUser(usersAtStart[0])
+
+		await api
+			.delete('/api/blogs/5e962f0db69261c21414f95d')
+			.set('Authorization', `Bearer ${token}`)
+			.expect(204)
 
 		const blogsAtEnd = await helper.blogsInDb()
 		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
@@ -157,12 +251,14 @@ describe('update blog', () => {
 		expect(response.body.id).toBe(blogsAtStart[0].id)
 
 		delete response.body.id
+		delete response.body.user
 		expect(response.body).toEqual(nBlog)
 
 		const blogsAtEnd = await helper.blogsInDb()
 		expect(blogsAtEnd.length).toBe(blogsAtStart.length)
 
 		delete blogsAtEnd[0].id
+		delete blogsAtEnd[0].user
 		expect(blogsAtEnd[0]).toEqual(nBlog)
 	})
 
