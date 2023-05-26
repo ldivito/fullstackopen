@@ -6,6 +6,9 @@ require('express-async-errors')
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
+  const [newBlogTitle, setNewBlogTitle] = useState('')
+  const [newBlogAuthor, setNewBlogAuthor] = useState('')
+  const [newBlogUrl, setNewBlogUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -21,6 +24,7 @@ const App = () => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
       const user = JSON.parse(loggedUserJSON)
+      blogService.setToken(user.token)
       setUser(user)
     }
   }, [])
@@ -37,6 +41,7 @@ const App = () => {
         'loggedBlogAppUser', JSON.stringify(user)
       )
 
+      blogService.setToken(user.token)
       setUser(user)
       setUsername('')
       setPassword('')
@@ -51,6 +56,29 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
+  }
+
+  const addBlog = async (event) => {
+    event.preventDefault()
+
+    try {
+      const blogObject = {
+        title: newBlogTitle,
+        author: newBlogAuthor,
+        url: newBlogUrl
+      }
+
+      const newBlog = await blogService.create(blogObject)
+      setBlogs(blogs.concat(newBlog))
+      setNewBlogTitle('')
+      setNewBlogAuthor('')
+      setNewBlogUrl('')
+    } catch (exception) {
+      setErrorMessage('Cannot add new blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+    }
   }
 
   const loginForm = () => (
@@ -79,13 +107,51 @@ const App = () => {
     </div>
   )
 
+  const blogForm = () => (
+    <div>
+      <h2>Create new</h2>
+      <form onSubmit={addBlog}>
+        <div>
+          title:
+          <input
+            value={newBlogTitle}
+            onChange={({target}) => setNewBlogTitle(target.value)}
+          />
+        </div>
+        <div>
+          author:
+          <input
+            value={newBlogAuthor}
+            onChange={({target}) => setNewBlogAuthor(target.value)}
+          />
+        </div>
+        <div>
+          url:
+          <input
+            value={newBlogUrl}
+            onChange={({target}) => setNewBlogUrl(target.value)}
+          />
+        </div>
+        <button type="submit">save</button>
+      </form>
+    </div>
+  )
+
   return (
     <div>
-      {user === null && loginForm()}
+
+      <h3>{errorMessage}</h3>
 
       {user && <div>
-        <p>{user.username} logged in</p> <button onClick={handleLogout}>Logout</button>
+        {user.username} logged in <button onClick={handleLogout}>Logout</button>
       </div>
+      }
+
+      <br/>
+
+      {user === null ?
+        loginForm() :
+        blogForm()
       }
 
       <h2>Blogs</h2>
