@@ -11,7 +11,7 @@ blogsRouter.get('/', async (request, response) => {
 	return response.json(blogs.map(blog => blog.toJSON()))
 })
 
-blogsRouter.post('/api/blogs', async (request, response) => {
+blogsRouter.post('/', async (request, response) => {
 
 	const decodedToken = jsonwebtoken.verify(request.token, config.JWT_SECRET)
 
@@ -42,8 +42,8 @@ blogsRouter.post('/api/blogs', async (request, response) => {
 	return response.status(201).json(savedBlog)
 })
 
-blogsRouter.delete('/api/blogs/:id', async (request, response) => {
-	const decodedToken = jwt.verify(request.token, config.JWT_SECRET)
+blogsRouter.delete('/:id', async (request, response) => {
+	const decodedToken = jsonwebtoken.verify(request.token, config.JWT_SECRET)
 
 	const blogToRemove = await Blog.findById(request.params.id)
 	if (!blogToRemove) {
@@ -59,7 +59,7 @@ blogsRouter.delete('/api/blogs/:id', async (request, response) => {
 	}
 })
 
-blogsRouter.put('/api/blogs/:id', async (request, response) => {
+blogsRouter.put('/:id', async (request, response) => {
 
 	if (!request.body.hasOwnProperty('title')) {
 		return response.status(400).json({error: 'Missing title'})
