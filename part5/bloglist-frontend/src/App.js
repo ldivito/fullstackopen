@@ -70,6 +70,12 @@ const App = () => {
 
       const newBlog = await blogService.create(blogObject)
       setBlogs(blogs.concat(newBlog))
+
+      setErrorMessage(`a new blog ${newBlogTitle} by ${newBlogAuthor} `)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
+
       setNewBlogTitle('')
       setNewBlogAuthor('')
       setNewBlogUrl('')
