@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
+import BlogForm from "./components/BlogForm";
+import Togglable from "./components/Togglable";
 require('express-async-errors')
 
 const App = () => {
@@ -13,6 +15,9 @@ const App = () => {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
+  const [blogFormVisible, setBlogFormVisible] = useState(false)
+
+  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -61,6 +66,7 @@ const App = () => {
   const addBlog = async (event) => {
     event.preventDefault()
 
+    blogFormRef.current.toggleVisibility()
     try {
       const blogObject = {
         title: newBlogTitle,
@@ -114,33 +120,17 @@ const App = () => {
   )
 
   const blogForm = () => (
-    <div>
-      <h2>Create new</h2>
-      <form onSubmit={addBlog}>
-        <div>
-          title:
-          <input
-            value={newBlogTitle}
-            onChange={({target}) => setNewBlogTitle(target.value)}
-          />
-        </div>
-        <div>
-          author:
-          <input
-            value={newBlogAuthor}
-            onChange={({target}) => setNewBlogAuthor(target.value)}
-          />
-        </div>
-        <div>
-          url:
-          <input
-            value={newBlogUrl}
-            onChange={({target}) => setNewBlogUrl(target.value)}
-          />
-        </div>
-        <button type="submit">save</button>
-      </form>
-    </div>
+    <Togglable buttonLabel='New blog' ref={blogFormRef}>
+      <BlogForm
+        handleSubmit={addBlog}
+        handleTitleChange={({target}) => setNewBlogTitle(target.value)}
+        handleAuthorChange={({target}) => setNewBlogAuthor(target.value)}
+        handleBlogUrlChange={({target}) => setNewBlogUrl(target.value)}
+        title={newBlogTitle}
+        author={newBlogAuthor}
+        blogUrl={newBlogUrl}
+      />
+    </Togglable>
   )
 
   return (
