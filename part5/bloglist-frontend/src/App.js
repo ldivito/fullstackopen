@@ -91,6 +91,17 @@ const App = () => {
       />
   )
 
+  const updateBlog = async (blog) => {
+    try {
+      await blogService.update(blog.id, blog)
+      const blogs = await blogService.getAll()
+      setBlogs(blogs.sort((a, b) => b.likes - a.likes))
+      setErrorMessage(`blog titled ${blog.title} by ${blog.author} liked`)
+    } catch (err) {
+      setErrorMessage(`Liking blog titled ${blog.title} by ${blog.author} failed.`)
+    }
+  }
+
   return (
     <div>
 
@@ -110,7 +121,7 @@ const App = () => {
 
       <h2>Blogs</h2>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} />
       )}
 
       <br/>
