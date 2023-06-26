@@ -23,7 +23,9 @@ const BlogForm = ({
                 }
 
                 const newBlog = await blogService.create(blogObject)
-                setBlogs(blogs.concat(newBlog))
+
+                const blogs = await blogService.getAll();
+                setBlogs(blogs);
 
                 setErrorMessage(`a new blog ${newBlogTitle} by ${newBlogAuthor} `)
                 setTimeout(() => {
