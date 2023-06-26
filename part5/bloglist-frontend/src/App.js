@@ -1,23 +1,16 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
 import BlogForm from "./components/BlogForm";
-import Togglable from "./components/Togglable";
 require('express-async-errors')
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
-  const [newBlogTitle, setNewBlogTitle] = useState('')
-  const [newBlogAuthor, setNewBlogAuthor] = useState('')
-  const [newBlogUrl, setNewBlogUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [user, setUser] = useState(null)
-  const [blogFormVisible, setBlogFormVisible] = useState(false)
-
-  const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>
@@ -63,36 +56,6 @@ const App = () => {
     setUser(null)
   }
 
-  const addBlog = async (event) => {
-    event.preventDefault()
-
-    blogFormRef.current.toggleVisibility()
-    try {
-      const blogObject = {
-        title: newBlogTitle,
-        author: newBlogAuthor,
-        url: newBlogUrl
-      }
-
-      const newBlog = await blogService.create(blogObject)
-      setBlogs(blogs.concat(newBlog))
-
-      setErrorMessage(`a new blog ${newBlogTitle} by ${newBlogAuthor} `)
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-
-      setNewBlogTitle('')
-      setNewBlogAuthor('')
-      setNewBlogUrl('')
-    } catch (exception) {
-      setErrorMessage('Cannot add new blog')
-      setTimeout(() => {
-        setErrorMessage(null)
-      }, 5000)
-    }
-  }
-
   const loginForm = () => (
     <div>
       <h2>Log in to application</h2>
@@ -120,17 +83,12 @@ const App = () => {
   )
 
   const blogForm = () => (
-    <Togglable buttonLabel='New blog' ref={blogFormRef}>
-      <BlogForm
-        handleSubmit={addBlog}
-        handleTitleChange={({target}) => setNewBlogTitle(target.value)}
-        handleAuthorChange={({target}) => setNewBlogAuthor(target.value)}
-        handleBlogUrlChange={({target}) => setNewBlogUrl(target.value)}
-        title={newBlogTitle}
-        author={newBlogAuthor}
-        blogUrl={newBlogUrl}
+    <BlogForm
+        blogService={blogService}
+        setErrorMessage={setErrorMessage}
+        blogs={blogs}
+        setBlogs={setBlogs}
       />
-    </Togglable>
   )
 
   return (
