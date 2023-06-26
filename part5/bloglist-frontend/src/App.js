@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import loginService from './services/login'
-import BlogForm from "./components/BlogForm";
+import BlogForm from './components/BlogForm'
 require('express-async-errors')
 
 const App = () => {
@@ -66,7 +66,7 @@ const App = () => {
             type='text'
             value={username}
             name='Username'
-            onChange={({target}) => setUsername(target.value)}
+            onChange={({ target }) => setUsername(target.value)}
           />
         </div>
         <div>
@@ -75,7 +75,7 @@ const App = () => {
             type='password'
             value={password}
             name='Password'
-            onChange={({target}) => setPassword(target.value)}/>
+            onChange={({ target }) => setPassword(target.value)}/>
         </div>
         <button type='submit'>login</button>
       </form>
@@ -84,11 +84,9 @@ const App = () => {
 
   const blogForm = () => (
     <BlogForm
-        blogService={blogService}
-        setErrorMessage={setErrorMessage}
-        blogs={blogs}
-        setBlogs={setBlogs}
-      />
+      setErrorMessage={setErrorMessage}
+      setBlogs={setBlogs}
+    />
   )
 
   const updateBlog = async (blog) => {

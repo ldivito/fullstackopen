@@ -7,7 +7,7 @@ const config = () => ({
   headers: {
     Authorization: token,
   },
-});
+})
 
 const setToken = newToken => {
   token = `Bearer ${newToken}`

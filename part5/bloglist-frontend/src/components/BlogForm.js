@@ -1,79 +1,83 @@
-import {useRef, useState} from "react";
-import Togglable from "./Togglable";
+import { useRef, useState } from 'react'
+import blogService from '../services/blogs'
+import Togglable from './Togglable'
+import PropTypes from 'prop-types'
 
-const BlogForm = ({
-    blogService,
-    setErrorMessage,
-    blogs, setBlogs
-    }) => {
-        const [newBlogTitle, setNewBlogTitle] = useState('')
-        const [newBlogAuthor, setNewBlogAuthor] = useState('')
-        const [newBlogUrl, setNewBlogUrl] = useState('')
+const BlogForm = ({ setErrorMessage, setBlogs }) => {
 
-        const blogFormRef = useRef()
+  const [newBlogTitle, setNewBlogTitle] = useState('')
+  const [newBlogAuthor, setNewBlogAuthor] = useState('')
+  const [newBlogUrl, setNewBlogUrl] = useState('')
 
-        const addBlog = async (event) => {
-            event.preventDefault()
-            blogFormRef.current.toggleVisibility()
-            try {
-                const blogObject = {
-                    title: newBlogTitle,
-                    author: newBlogAuthor,
-                    url: newBlogUrl
-                }
+  const blogFormRef = useRef()
 
-                const newBlog = await blogService.create(blogObject)
+  const addBlog = async (event) => {
+    event.preventDefault()
+    blogFormRef.current.toggleVisibility()
+    try {
+      const blogObject = {
+        title: newBlogTitle,
+        author: newBlogAuthor,
+        url: newBlogUrl
+      }
 
-                const blogs = await blogService.getAll();
-                setBlogs(blogs);
+      await blogService.create(blogObject)
 
-                setErrorMessage(`a new blog ${newBlogTitle} by ${newBlogAuthor} `)
-                setTimeout(() => {
-                    setErrorMessage(null)
-                }, 5000)
+      const blogs = await blogService.getAll()
+      setBlogs(blogs)
 
-                setNewBlogTitle('')
-                setNewBlogAuthor('')
-                setNewBlogUrl('')
-            } catch (exception) {
-                setErrorMessage('Cannot add new blog')
-                setTimeout(() => {
-                    setErrorMessage(null)
-                }, 5000)
-            }
-        }
+      setErrorMessage(`a new blog ${newBlogTitle} by ${newBlogAuthor} `)
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
 
-        return (
-            <div>
-                <h2>Create new Blog</h2>
-                <Togglable buttonLabel='New blog' ref={blogFormRef}>
-                    <form onSubmit={addBlog}>
-                        <div>
-                            title:
-                            <input
-                              value={newBlogTitle}
-                              onChange={({target}) => setNewBlogTitle(target.value)}
-                            />
-                        </div>
-                        <div>
-                            author:
-                            <input
-                              value={newBlogAuthor}
-                              onChange={({target}) => setNewBlogAuthor(target.value)}
-                            />
-                        </div>
-                        <div>
-                            url:
-                            <input
-                              value={newBlogUrl}
-                              onChange={({target}) => setNewBlogUrl(target.value)}
-                            />
-                        </div>
-                        <button type="submit">save</button>
-                    </form>
-                </Togglable>
-            </div>
-        )
+      setNewBlogTitle('')
+      setNewBlogAuthor('')
+      setNewBlogUrl('')
+    } catch (exception) {
+      setErrorMessage('Cannot add new blog')
+      setTimeout(() => {
+        setErrorMessage(null)
+      }, 5000)
     }
+  }
+
+  return (
+    <div>
+      <h2>Create new Blog</h2>
+      <Togglable buttonLabel='New blog' ref={blogFormRef}>
+        <form onSubmit={addBlog}>
+          <div>
+            title:
+            <input
+              value={newBlogTitle}
+              onChange={({ target }) => setNewBlogTitle(target.value)}
+            />
+          </div>
+          <div>
+            author:
+            <input
+              value={newBlogAuthor}
+              onChange={({ target }) => setNewBlogAuthor(target.value)}
+            />
+          </div>
+          <div>
+            url:
+            <input
+              value={newBlogUrl}
+              onChange={({ target }) => setNewBlogUrl(target.value)}
+            />
+          </div>
+          <button type="submit">save</button>
+        </form>
+      </Togglable>
+    </div>
+  )
+}
+
+BlogForm.propTypes = {
+  setErrorMessage: PropTypes.func.isRequired,
+  setBlogs: PropTypes.func.isRequired
+}
 
 export default BlogForm
