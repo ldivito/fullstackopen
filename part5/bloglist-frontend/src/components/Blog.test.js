@@ -46,3 +46,25 @@ test('URL and Like count is visible when clicking the show more button', async (
   expect(url).toBeDefined();
   expect(likes).toBeDefined();
 });
+
+test('Clicking the like button twice calls the event handler also two times', async () => {
+  const blog = {
+    title: "This is a test blog title",
+    author: 'Leandro',
+    likes: 50,
+    url: 'https://www.google.com',
+    user: {},
+  };
+
+  const user = userEvent.setup();
+  const updateBlog = jest.fn();
+
+  const { container } = render(<Blog blog={blog} updateBlog={updateBlog} />);
+  const viewButton = screen.getByText('View');
+  await user.click(viewButton);
+
+  const likeButton = screen.getByText('Like');
+  await user.click(likeButton);
+  await user.click(likeButton);
+  expect(updateBlog).toHaveBeenCalledTimes(2);
+});
