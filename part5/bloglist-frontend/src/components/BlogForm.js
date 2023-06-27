@@ -48,23 +48,29 @@ const BlogForm = ({ setErrorMessage, setBlogs }) => {
       <Togglable buttonLabel='New blog' ref={blogFormRef}>
         <form onSubmit={addBlog}>
           <div>
-            title:
+            <label htmlFor="title">title:</label>
             <input
               value={newBlogTitle}
+              id='title'
+              placeholder='title'
               onChange={({ target }) => setNewBlogTitle(target.value)}
             />
           </div>
           <div>
-            author:
+            <label htmlFor="author">author:</label>
             <input
               value={newBlogAuthor}
+              id='author'
+              placeholder='author'
               onChange={({ target }) => setNewBlogAuthor(target.value)}
             />
           </div>
           <div>
-            url:
+            <label htmlFor="url">url:</label>
             <input
               value={newBlogUrl}
+              id='url'
+              placeholder='url'
               onChange={({ target }) => setNewBlogUrl(target.value)}
             />
           </div>
