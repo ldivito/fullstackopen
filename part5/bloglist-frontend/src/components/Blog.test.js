@@ -22,4 +22,27 @@ test('renders title and author by default and not number of likes', async () => 
   const { container } = render(<Blog blog={blog} />)
   const likes = container.querySelector('.likes')
   expect(likes).toEqual(null)
+  const url = container.querySelector('.url');
+  expect(url).toEqual(null);
+});
+
+test('URL and Like count is visible when clicking the show more button', async () => {
+  const blog = {
+    title: "This is a test blog title",
+    author: 'Leandro',
+    likes: 50,
+    url: 'https://www.google.com',
+    user: {},
+  };
+
+  const user = userEvent.setup();
+  const { container } = render(<Blog blog={blog} />);
+
+  const view = screen.getByText('View');
+  await user.click(view);
+
+  const likes = container.querySelector('.likes');
+  const url = container.querySelector('.url');
+  expect(url).toBeDefined();
+  expect(likes).toBeDefined();
 });
