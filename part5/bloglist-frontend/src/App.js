@@ -72,6 +72,7 @@ const App = () => {
             type='text'
             value={username}
             name='Username'
+            id='username'
             onChange={({ target }) => setUsername(target.value)}
           />
         </div>
@@ -81,9 +82,10 @@ const App = () => {
             type='password'
             value={password}
             name='Password'
+            id='password'
             onChange={({ target }) => setPassword(target.value)}/>
         </div>
-        <button type='submit'>login</button>
+        <button type='submit' id='login-button'>log in</button>
       </form>
     </div>
   )
@@ -126,7 +128,7 @@ const App = () => {
       <h3>{errorMessage}</h3>
 
       {user && <div>
-        {user.username} logged in <button onClick={handleLogout}>Logout</button>
+        {user.name} logged in <button onClick={handleLogout}>Logout</button>
       </div>
       }
 
