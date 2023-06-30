@@ -13,19 +13,17 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>
-      setBlogs( blogs )
-    )
-  }, [])
+    const loggedinUserJSON = window.localStorage.getItem('loggedinBlogUser')
+    const loggedUserBlogs = window.localStorage.getItem('userBlogs')
 
-  useEffect(() => {
-    const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
-    if (loggedUserJSON) {
-      const user = JSON.parse(loggedUserJSON)
-      blogService.setToken(user.token)
+    if (loggedinUserJSON) {
+      const user = JSON.parse(loggedinUserJSON)
       setUser(user)
+      blogService.setToken(user.token)
+      setBlogs(JSON.parse(loggedUserBlogs))
     }
   }, [])
+
 
   const handleLogin =  async (event) => {
     event.preventDefault()
@@ -40,6 +38,14 @@ const App = () => {
       )
 
       blogService.setToken(user.token)
+
+      const blogList = blogs.sort((a, b) => b.likes - a.likes)
+      const filtered = blogList.filter((blog) => blog.user.username === username)
+      // Set the filtered blogs in the local storage
+      window.localStorage.setItem('userBlogs', JSON.stringify(filtered))
+      // Display the filtered blogs
+      setBlogs(filtered)
+
       setUser(user)
       setUsername('')
       setPassword('')
@@ -52,7 +58,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    window.localStorage.removeItem('loggedBlogAppUser')
+    window.localStorage.clear()
     setUser(null)
   }
 

@@ -44,23 +44,23 @@ const Blog = ({ blog, updateBlog, deleteBlog, username }) => {
       </div>
 
       {blogVisible && (
-      <div style={showWhenVisible} lassName="info">
-        <ul>
-          <li className="url">URL: {blog.url}</li>
-          <li className="likes">Likes: {blog.likes} <button onClick={addLike}>Like</button></li>
-          <li className="user">User: {blog.user.username}</li>
-        </ul>
-        <div>
-          {blog.user.username === username && (
-            <button onClick={() => deleteBlog(blog.id, blog)}>Remove</button>
-          )}
-        </div>
-      </div>)}
+        <div style={showWhenVisible}>
+          <ul>
+            <li className="url">URL: {blog.url}</li>
+            <li className="likes">Likes: {blog.likes} <button onClick={addLike}>Like</button></li>
+            <li className="user">User: {blog.user.username}</li>
+          </ul>
+          <div>
+            {blog.user.username === username && (
+              <button onClick={() => deleteBlog(blog.id, blog)}>Remove</button>
+            )}
+          </div>
+        </div>)}
     </div>
   )}
 
 Blog.propTypes = {
-  blog: PropTypes.func.isRequired,
+  blog: PropTypes.object.isRequired,
   updateBlog: PropTypes.func.isRequired,
   deleteBlog: PropTypes.func.isRequired,
   username:  PropTypes.string.isRequired
