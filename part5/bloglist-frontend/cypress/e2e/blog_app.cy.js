@@ -65,5 +65,18 @@ describe('Blog app', function() {
 
       cy.contains('Likes: 1')
     });
+
+    it('A blog can be deleted', function () {
+      cy.contains('New blog').click()
+      cy.get('#title').type('New blog')
+      cy.get('#author').type('Matti')
+      cy.get('#url').type('google.com')
+      cy.contains('save').click()
+
+      cy.contains('View').click()
+      cy.contains('Remove').click()
+
+      cy.contains('New blog Matti').should('not.exist')
+    });
   })
 })
