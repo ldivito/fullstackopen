@@ -13,14 +13,11 @@ const App = () => {
   const [user, setUser] = useState(null)
 
   useEffect(() => {
-    const loggedinUserJSON = window.localStorage.getItem('loggedinBlogUser')
-    const loggedUserBlogs = window.localStorage.getItem('userBlogs')
-
-    if (loggedinUserJSON) {
-      const user = JSON.parse(loggedinUserJSON)
-      setUser(user)
+    const userJSON = window.localStorage.getItem('loggedBlogAppUser')
+    if (userJSON) {
+      const user = JSON.parse(userJSON)
       blogService.setToken(user.token)
-      setBlogs(JSON.parse(loggedUserBlogs))
+      setUser(user)
     }
   }, [])
 
@@ -39,12 +36,13 @@ const App = () => {
 
       blogService.setToken(user.token)
 
+
+      const blogs = await blogService.getAll()
       const blogList = blogs.sort((a, b) => b.likes - a.likes)
-      const filtered = blogList.filter((blog) => blog.user.username === username)
       // Set the filtered blogs in the local storage
-      window.localStorage.setItem('userBlogs', JSON.stringify(filtered))
+      window.localStorage.setItem('userBlogs', JSON.stringify(blogList))
       // Display the filtered blogs
-      setBlogs(filtered)
+      setBlogs(blogList)
 
       setUser(user)
       setUsername('')
@@ -58,7 +56,7 @@ const App = () => {
   }
 
   const handleLogout = () => {
-    window.localStorage.clear()
+    window.localStorage.removeItem('loggedBlogAppUser')
     setUser(null)
   }
 
@@ -138,11 +136,10 @@ const App = () => {
         loginForm() :
         blogForm()
       }
-
       <h2>Blogs</h2>
-      {blogs.sort((a, b) => b.likes - a.likes).map(blog =>
-        <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} username={user.username} />
-      )}
+      { user &&
+          blogs.sort((a, b) => b.likes - a.likes).map(blog => <Blog key={blog.id} blog={blog} updateBlog={updateBlog} deleteBlog={deleteBlog} username={user.username} />)
+      }
       <br/>
     </div>
 

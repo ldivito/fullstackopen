@@ -7,6 +7,14 @@ describe('Blog app', function() {
       password: 'salainen'
     }
     cy.request('POST', 'http://localhost:3001/api/users/', user)
+
+    const userAlt = {
+      name: 'Leandro',
+      username: 'ldivito',
+      password: 'root'
+    }
+    cy.request('POST', 'http://localhost:3001/api/users/', userAlt)
+
     cy.visit('http://localhost:3000')
   })
 
@@ -37,10 +45,10 @@ describe('Blog app', function() {
 
   describe('When logged in', function() {
     beforeEach(function() {
-      cy.contains('log in').click()
       cy.get('#username').type('mluukkai')
       cy.get('#password').type('salainen')
       cy.get('#login-button').click()
+
     })
 
     it('A blog can be created', function() {
@@ -77,6 +85,23 @@ describe('Blog app', function() {
       cy.contains('Remove').click()
 
       cy.contains('New blog Matti').should('not.exist')
+    });
+
+    it('A blog cannot be deleted by another user', function () {
+      cy.contains('New blog').click()
+      cy.get('#title').type('New blog')
+      cy.get('#author').type('Matti')
+      cy.get('#url').type('google.com')
+      cy.contains('save').click()
+
+      cy.contains('Logout').click()
+
+      cy.get('#username').type('ldivito')
+      cy.get('#password').type('root')
+      cy.get('#login-button').click()
+
+      cy.contains('View').click()
+      cy.contains('Delete').should('not.exist')
     });
   })
 })
