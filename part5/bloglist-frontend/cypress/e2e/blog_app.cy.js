@@ -72,7 +72,7 @@ describe('Blog app', function() {
       cy.contains('Like').click()
 
       cy.contains('Likes: 1')
-    });
+    })
 
     it('A blog can be deleted', function () {
       cy.contains('New blog').click()
@@ -85,7 +85,7 @@ describe('Blog app', function() {
       cy.contains('Remove').click()
 
       cy.contains('New blog Matti').should('not.exist')
-    });
+    })
 
     it('A blog cannot be deleted by another user', function () {
       cy.contains('New blog').click()
@@ -102,6 +102,44 @@ describe('Blog app', function() {
 
       cy.contains('View').click()
       cy.contains('Delete').should('not.exist')
-    });
+    })
+
+    it('Blogs are ordered by like count in descending order', function () {
+      cy.contains('New blog').click()
+      cy.get('#title').type('First')
+      cy.get('#author').type('Matti')
+      cy.get('#url').type('google.com')
+      cy.contains('save').click()
+
+      cy.contains('View').click()
+      cy.contains('Like').click()
+      cy.contains('Like').click()
+
+      cy.contains('New blog').click()
+      cy.get('#title').type('Second')
+      cy.get('#author').type('Matti')
+      cy.get('#url').type('google.com')
+      cy.contains('save').click()
+
+      cy.contains('Second Matti')
+          .contains('View').click()
+      cy.contains('Second Matti').get('.likes').eq(1).contains('Like').click()
+
+
+      cy.contains('New blog').click()
+      cy.get('#title').type('Third')
+      cy.get('#author').type('Matti')
+      cy.get('#url').type('google.com')
+      cy.contains('save').click()
+
+      cy.contains('Third Matti')
+          .contains('View').click()
+
+      cy.contains('First Matti').get('.likes').eq(0).contains('Likes: 2')
+      cy.contains('Second Matti').get('.likes').eq(1).contains('Likes: 1')
+      cy.contains('Third Matti').get('.likes').eq(2).contains('Likes: 0')
+
+    })
+
   })
 })
