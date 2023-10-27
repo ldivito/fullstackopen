@@ -5,7 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b97f0884-4197-45fc-a328-3d3c9a9acac5" name="Changes" comment="Part 6 - Exercise 6.1 - Initial testing using reducer">
-      <change beforePath="$PROJECT_DIR$/../redux-anecdotes" beforeDir="false" afterPath="$PROJECT_DIR$/../redux-anecdotes" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/../redux-anecdotes" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -15,10 +16,10 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../.." />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 0
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 0
+}</component>
   <component name="ProjectId" id="2S5404yL9knyGLeLP3r5cOvqP6O" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
@@ -35,6 +36,7 @@
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;project.propVCSSupport.DirectoryMappings&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
 }</component>
@@ -48,6 +50,9 @@
       <updated>1688422881651</updated>
       <workItem from="1688422882664" duration="1352000" />
       <workItem from="1698374401118" duration="14000" />
+      <workItem from="1698374730508" duration="136000" />
+      <workItem from="1698374907224" duration="11000" />
+      <workItem from="1698375731265" duration="27000" />
     </task>
     <task id="LOCAL-00001" summary="Part 6 - Exercise 6.1 - Initial testing using reducer">
       <option name="closed" value="true" />
