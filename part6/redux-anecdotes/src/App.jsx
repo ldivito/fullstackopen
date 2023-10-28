@@ -5,7 +5,11 @@ const App = () => {
   const dispatch = useDispatch()
 
   const vote = (id) => {
-    console.log('vote', id)
+    // Dispatch the action creator here for voting
+    dispatch({
+      type: 'VOTE',
+      data: { id }
+    })
   }
 
   return (
