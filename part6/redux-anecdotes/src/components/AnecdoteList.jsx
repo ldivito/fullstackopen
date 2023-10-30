@@ -26,6 +26,10 @@ const AnecdoteList = () => {
       type: 'anecdote/addVote',
       payload: id
     })
+    dispatch({
+      type: 'notifications/setNotification',
+      payload: `you voted '${anecdotes.find(a => a.id === id).content}'`
+    })
   }
 
   return (
