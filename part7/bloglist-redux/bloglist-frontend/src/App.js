@@ -161,6 +161,7 @@ export const BlogDetails = () => {
 export const Base = () => {
   const dispatch = useDispatch();
   const blogs = useSelector((state) => state.blogs);
+  const blogFormRef = useRef();
 
   useEffect(() => {
     blogService.getAll().then((blogs) => {
@@ -169,9 +170,25 @@ export const Base = () => {
     });
   }, [dispatch]);
 
+  const createBlog = async (newBlog) => {
+    const createdBlog = await blogService.create(newBlog);
+    dispatch(addBlog(blogs, createdBlog));
+    dispatch(
+      setNotificationTimeout(5, {
+        message: `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
+        type: "info",
+      }),
+    );
+    blogFormRef.current.toggleVisibility();
+  };
+
+
   return (
     <div>
       <h2>blogs</h2>
+      <Togglable buttonLabel="new note" ref={blogFormRef}>
+        <NewBlog createBlog={createBlog} />
+      </Togglable>
       <div>
         {blogs.map((blog) => (
           <Link key={blog.id} to={`/blogs/${blog.id}`}>
@@ -194,7 +211,6 @@ export const App = () => {
   const blogs = useSelector((state) => state.blogs);
   const user = useSelector((state) => state.user);
 
-  const blogFormRef = useRef();
 
   useEffect(() => {
     const user = storageService.loadUser();
@@ -240,18 +256,6 @@ export const App = () => {
     );
   };
 
-  const createBlog = async (newBlog) => {
-    const createdBlog = await blogService.create(newBlog);
-    dispatch(addBlog(blogs, createdBlog));
-    dispatch(
-      setNotificationTimeout(5, {
-        message: `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
-        type: "info",
-      }),
-    );
-    blogFormRef.current.toggleVisibility();
-  };
-
   const remove = async (blog) => {
     const ok = window.confirm(
       `Sure you want to remove '${blog.title}' by ${blog.author}`,
@@ -280,27 +284,24 @@ export const App = () => {
 
   return (
     <Router>
-      <div style={{ backgroundColor: "lightgray", padding: 5 }}>
-        <Link to="/" style={{ paddingRight: 5 }}>blogs</Link>
-        <Link to="/users" style={{ paddingRight: 5 }}>users</Link>
-        {user.name} logged in <button onClick={logout}>logout</button>
+      <div className="container">
+        <div style={{ backgroundColor: "lightgray", padding: 5 }}>
+          <Link to="/" style={{ paddingRight: 5 }}>blogs</Link>
+          <Link to="/users" style={{ paddingRight: 5 }}>users</Link>
+          {user.name} logged in <button onClick={logout}>logout</button>
+        </div>
+
+        <div>
+          <Notification />
+        </div>
+
+        <Routes>
+          <Route path="/" element={<Base />} />
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
+          <Route path="/blogs/:id" element={<BlogDetails />} />
+        </Routes>
       </div>
-
-      <div>
-        <h2>blogs</h2>
-        <Notification />
-
-        <Togglable buttonLabel="new note" ref={blogFormRef}>
-          <NewBlog createBlog={createBlog} />
-        </Togglable>
-      </div>
-
-      <Routes>
-        <Route path="/" element={<Base />} />
-        <Route path="/users" element={<Users />} />
-        <Route path="/users/:id" element={<User />} />
-        <Route path="/blogs/:id" element={<BlogDetails />} />
-      </Routes>
     </Router>
   );
 };
