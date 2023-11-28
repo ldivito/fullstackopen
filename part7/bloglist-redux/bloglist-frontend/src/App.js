@@ -1,3 +1,6 @@
+/* eslint-disable no-unused-vars */
+/* eslint-disable no-undef */
+
 import React, { useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
@@ -87,6 +90,67 @@ export const User = () => {
           <li key={blog.id}>{blog.title}</li>
         ))}
       </ul>
+    </div>
+  );
+}
+
+export const BlogDetails = () => {
+  const id = useParams().id;
+
+  const dispatch = useDispatch();
+  const blogs = useSelector((state) => state.blogs);
+  const blog = blogs.find((blog) => blog.id === id);
+
+  useEffect(() => {
+    blogService.getAll().then((blogs) => {
+      blogs.sort((b1, b2) => b2.likes - b1.likes);
+      dispatch(setBlogs(blogs));
+    });
+  }, [dispatch]);
+
+  if (!blog) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h2>{blog.title} by {blog.author}</h2>
+      <a href={blog.url}>{blog.url}</a>
+      <div>
+        {blog.likes} likes
+        <button onClick={() => like(blog)}>like</button>
+      </div>
+      <div>added by {blog.user.username}</div>
+    </div>
+  );
+}
+
+export const Base = () => {
+  const dispatch = useDispatch();
+  const blogs = useSelector((state) => state.blogs);
+
+  useEffect(() => {
+    blogService.getAll().then((blogs) => {
+      blogs.sort((b1, b2) => b2.likes - b1.likes);
+      dispatch(setBlogs(blogs));
+    });
+  }, [dispatch]);
+
+  return (
+    <div>
+      <h2>blogs</h2>
+      <div>
+        {blogs.map((blog) => (
+          <Link key={blog.id} to={`/blogs/${blog.id}`}>
+            <Blog
+              key={blog.id}
+              blog={blog}
+              like={() => like(blog)}
+              remove={() => remove(blog)}
+            />
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
@@ -205,22 +269,13 @@ export const App = () => {
         <Togglable buttonLabel="new note" ref={blogFormRef}>
           <NewBlog createBlog={createBlog} />
         </Togglable>
-        <div>
-          {blogs.map((blog) => (
-            <Blog
-              key={blog.id}
-              blog={blog}
-              like={like}
-              remove={remove}
-              user={user}
-            />
-          ))}
-        </div>
       </div>
 
       <Routes>
+        <Route path="/" element={<Base />} />
         <Route path="/users" element={<Users />} />
         <Route path="/users/:id" element={<User />} />
+        <Route path="/blogs/:id" element={<BlogDetails />} />
       </Routes>
     </Router>
   );
