@@ -112,6 +112,29 @@ export const BlogDetails = () => {
     return null;
   }
 
+  const like = async (blog) => {
+    const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id };
+    const updatedBlog = await blogService.update(blogToUpdate);
+    dispatch(likeBlog(updatedBlog));
+    dispatch(
+      setNotificationTimeout(5, {
+        message: `You liked '${blog.title}' by ${blog.author}`,
+        type: "info",
+      }),
+    );
+  };
+
+  const comment = async (blog) => {
+    const comment = document.getElementById("comment").value;
+    const updatedBlog = await blogService.comment(blog.id, comment);
+    dispatch(
+      setNotificationTimeout(5, {
+        message: `You commented '${blog.title}' by ${blog.author}`,
+        type: "info",
+      }),
+    );
+  }
+
   return (
     <div>
       <h2>{blog.title} by {blog.author}</h2>
@@ -122,6 +145,10 @@ export const BlogDetails = () => {
       </div>
       <div>added by {blog.user.username}</div>
       <h3>comments</h3>
+      <div>
+        <input id="comment" />
+        <button onClick={() => comment(blog)}>add comment</button>
+      </div>
       <ul>
         {blog.comments.map((comment, index) => (
           <li key={index}>{comment}</li>
@@ -223,18 +250,6 @@ export const App = () => {
       }),
     );
     blogFormRef.current.toggleVisibility();
-  };
-
-  const like = async (blog) => {
-    const blogToUpdate = { ...blog, likes: blog.likes + 1, user: blog.user.id };
-    const updatedBlog = await blogService.update(blogToUpdate);
-    dispatch(likeBlog(updatedBlog));
-    dispatch(
-      setNotificationTimeout(5, {
-        message: `You liked '${blog.title}' by ${blog.author}`,
-        type: "info",
-      }),
-    );
   };
 
   const remove = async (blog) => {
