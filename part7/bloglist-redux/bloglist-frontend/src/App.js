@@ -29,6 +29,7 @@ import {
   BrowserRouter as Router,
   Routes, Route, useParams, Link
 } from 'react-router-dom'
+import {Button, ListGroup, Table} from "react-bootstrap";
 
 export const Users = () => {
   const dispatch = useDispatch();
@@ -43,10 +44,10 @@ export const Users = () => {
   return (
     <div>
       <h2>Users</h2>
-      <table>
+      <Table striped>
         <thead>
           <tr>
-            <th></th>
+            <th>User</th>
             <th>blogs created</th>
           </tr>
         </thead>
@@ -58,7 +59,8 @@ export const Users = () => {
             </tr>
           ))}
         </tbody>
-      </table>
+      </Table>
+
     </div>
   );
 }
@@ -85,11 +87,12 @@ export const User = () => {
     <div>
       <h2>{user.username}</h2>
       <h3>added blogs</h3>
-      <ul>
+      <ListGroup>
         {user.blogs.map((blog) => (
-          <li key={blog.id}>{blog.title}</li>
+          <ListGroup.Item key={blog.id}>{blog.title}</ListGroup.Item>
         ))}
-      </ul>
+      </ListGroup>
+
     </div>
   );
 }
@@ -130,7 +133,7 @@ export const BlogDetails = () => {
     dispatch(
       setNotificationTimeout(5, {
         message: `You commented '${blog.title}' by ${blog.author}`,
-        type: "info",
+        type: "success",
       }),
     );
   }
@@ -141,19 +144,19 @@ export const BlogDetails = () => {
       <a href={blog.url}>{blog.url}</a>
       <div>
         {blog.likes} likes
-        <button onClick={() => like(blog)}>like</button>
+        <Button variant="success" onClick={() => like(blog)}>like</Button>
       </div>
       <div>added by {blog.user.username}</div>
       <h3>comments</h3>
       <div>
         <input id="comment" />
-        <button onClick={() => comment(blog)}>add comment</button>
+        <Button variant="primary" onClick={() => comment(blog)}>add comment</Button>
       </div>
-      <ul>
-        {blog.comments.map((comment, index) => (
-          <li key={index}>{comment}</li>
+      <ListGroup>
+        {blog.comments.map((comment) => (
+          <ListGroup.Item key={comment}>{comment}</ListGroup.Item>
         ))}
-      </ul>
+      </ListGroup>
     </div>
   );
 }
@@ -176,7 +179,7 @@ export const Base = () => {
     dispatch(
       setNotificationTimeout(5, {
         message: `a new blog ${createdBlog.title} by ${createdBlog.author} added`,
-        type: "info",
+        type: "success",
       }),
     );
     blogFormRef.current.toggleVisibility();
@@ -189,18 +192,21 @@ export const Base = () => {
       <Togglable buttonLabel="new note" ref={blogFormRef}>
         <NewBlog createBlog={createBlog} />
       </Togglable>
-      <div>
-        {blogs.map((blog) => (
-          <Link key={blog.id} to={`/blogs/${blog.id}`}>
-            <Blog
-              key={blog.id}
-              blog={blog}
-              like={() => like(blog)}
-              remove={() => remove(blog)}
-            />
-          </Link>
-        ))}
-      </div>
+      <br/>
+      <Table striped>
+        <tbody>
+          {blogs.map((blog) => (
+            <tr key={blog.id}>
+              <td>
+                <Link to={`/blogs/${blog.id}`}>
+                  {blog.title} {blog.author}
+                </Link>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </Table>
+
     </div>
   );
 }
@@ -232,14 +238,14 @@ export const App = () => {
       dispatch(
         setNotificationTimeout(5, {
           message: `Welcome ${user.name}`,
-          type: "info",
+          type: "success",
         }),
       );
     } catch (e) {
       dispatch(
         setNotificationTimeout(5, {
           message: "wrong username or password",
-          type: "error",
+          type: "danger",
         }),
       );
     }
@@ -251,7 +257,7 @@ export const App = () => {
     dispatch(
       setNotificationTimeout(5, {
         message: "Logged out",
-        type: "info",
+        type: "success",
       }),
     );
   };
@@ -266,7 +272,7 @@ export const App = () => {
       dispatch(
         setNotificationTimeout(5, {
           message: `You removed '${blog.title}' by ${blog.author}`,
-          type: "info",
+          type: "success",
         }),
       );
     }
@@ -274,9 +280,11 @@ export const App = () => {
 
   if (!user) {
     return (
-      <div>
+      <div className="container">
         <h2>log in to application</h2>
+        <br/>
         <Notification />
+        <br/>
         <LoginForm login={login} />
       </div>
     );
@@ -288,10 +296,11 @@ export const App = () => {
         <div style={{ backgroundColor: "lightgray", padding: 5 }}>
           <Link to="/" style={{ paddingRight: 5 }}>blogs</Link>
           <Link to="/users" style={{ paddingRight: 5 }}>users</Link>
-          {user.name} logged in <button onClick={logout}>logout</button>
+          {user.name} logged in <Button variant="danger" onClick={logout}>logout</Button>
         </div>
 
         <div>
+          <br/>
           <Notification />
         </div>
 
