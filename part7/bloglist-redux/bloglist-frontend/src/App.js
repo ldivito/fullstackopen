@@ -259,13 +259,16 @@ export const App = () => {
 
   return (
     <Router>
+      <div style={{ backgroundColor: "lightgray", padding: 5 }}>
+        <Link to="/" style={{ paddingRight: 5 }}>blogs</Link>
+        <Link to="/users" style={{ paddingRight: 5 }}>users</Link>
+        {user.name} logged in <button onClick={logout}>logout</button>
+      </div>
+
       <div>
         <h2>blogs</h2>
         <Notification />
-        <div>
-          {user.name} logged in
-          <button onClick={logout}>logout</button>
-        </div>
+
         <Togglable buttonLabel="new note" ref={blogFormRef}>
           <NewBlog createBlog={createBlog} />
         </Togglable>
