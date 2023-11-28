@@ -123,3 +123,5 @@ z
 Jpart7/bloglist-redux/bloglist-frontend/src/reducers/notificationReducer.js,b\1\b127618446d27f7abda397b6c0f1f3e4290d5fa1
 c
 3part7/bloglist-redux/bloglist-frontend/src/store.js,2\9\2908bfd6ac40f4d62b7d2dc7d4d280a6451ffbb9
+r
+Bpart7/bloglist-redux/bloglist-frontend/src/reducers/blogReducer.js,b\a\ba14636ce208384b4e25b3ac13da78ff77e1f684
