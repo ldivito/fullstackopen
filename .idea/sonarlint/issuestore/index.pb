@@ -129,3 +129,9 @@ e
 5part7/bloglist-redux/bloglist-backend/createuser.http,e\7\e7e376a3f52f71e6e2c0a7fead09ae17ce29477e
 r
 Bpart7/bloglist-redux/bloglist-frontend/src/reducers/userReducer.js,a\7\a703bb8bf108389c2ce3065f4a88c6c4cffa32a8
+s
+Cpart7/bloglist-redux/bloglist-frontend/src/reducers/usersReducer.js,c\e\ce42792d8ada5191dfc3ccfb43997a43b727a8a3
+k
+;part7/bloglist-redux/bloglist-frontend/src/services/user.js,9\1\9126f42e1b92eaf0588ab9879213400c3780a587
+l
+<part7/bloglist-redux/bloglist-frontend/src/services/users.js,e\6\e6b9f4c8971c86e0bb2b9dfd888e517f665f6266

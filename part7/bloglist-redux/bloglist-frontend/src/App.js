@@ -10,7 +10,10 @@ import {
 import loginService from "./services/login";
 import storageService from "./services/storage";
 
-import { setUsers } from "./reducers/userReducer";
+import { setUser } from "./reducers/userReducer";
+
+import usersService from "./services/users";
+import { setUsers } from "./reducers/usersReducer";
 
 import LoginForm from "./components/LoginForm";
 import NewBlog from "./components/NewBlog";
@@ -19,18 +22,55 @@ import Togglable from "./components/Togglable";
 
 import { useDispatch, useSelector } from "react-redux";
 import { setNotificationTimeout } from "./reducers/notificationReducer";
+import {
+  BrowserRouter as Router,
+  Routes, Route
+} from 'react-router-dom'
 
-const App = () => {
+export const Users = () => {
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.users);
+
+  useEffect(() => {
+    usersService.getAll().then((users) => {
+      dispatch(setUsers(users));
+    })
+  }, []);
+
+  return (
+    <div>
+      <h2>Users</h2>
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>blogs created</th>
+          </tr>
+        </thead>
+        <tbody>
+          {users.map((user) => (
+            <tr key={user.id}>
+              <td>{user.username}</td>
+              <td>{user.blogs.length}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export const App = () => {
   const dispatch = useDispatch();
 
   const blogs = useSelector((state) => state.blogs);
-  const users = useSelector((state) => state.users);
+  const user = useSelector((state) => state.user);
 
   const blogFormRef = useRef();
 
   useEffect(() => {
     const user = storageService.loadUser();
-    dispatch(setUsers(user));
+    dispatch(setUser(user));
   }, []);
 
   useEffect(() => {
@@ -43,7 +83,7 @@ const App = () => {
   const login = async (username, password) => {
     try {
       const user = await loginService.login({ username, password });
-      dispatch(setUsers(user));
+      dispatch(setUser(user));
       storageService.saveUser(user);
       dispatch(
         setNotificationTimeout(5, {
@@ -62,7 +102,7 @@ const App = () => {
   };
 
   const logout = async () => {
-    dispatch(setUsers(null));
+    dispatch(setUser(null));
     storageService.removeUser();
     dispatch(
       setNotificationTimeout(5, {
@@ -112,7 +152,7 @@ const App = () => {
     }
   };
 
-  if (!users) {
+  if (!user) {
     return (
       <div>
         <h2>log in to application</h2>
@@ -123,28 +163,34 @@ const App = () => {
   }
 
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
+    <Router>
       <div>
-        {users.name} logged in
-        <button onClick={logout}>logout</button>
+        <h2>blogs</h2>
+        <Notification />
+        <div>
+          {user.name} logged in
+          <button onClick={logout}>logout</button>
+        </div>
+        <Togglable buttonLabel="new note" ref={blogFormRef}>
+          <NewBlog createBlog={createBlog} />
+        </Togglable>
+        <div>
+          {blogs.map((blog) => (
+            <Blog
+              key={blog.id}
+              blog={blog}
+              like={like}
+              remove={remove}
+              user={user}
+            />
+          ))}
+        </div>
       </div>
-      <Togglable buttonLabel="new note" ref={blogFormRef}>
-        <NewBlog createBlog={createBlog} />
-      </Togglable>
-      <div>
-        {blogs.map((blog) => (
-          <Blog
-            key={blog.id}
-            blog={blog}
-            like={like}
-            remove={remove}
-            user={users}
-          />
-        ))}
-      </div>
-    </div>
+
+      <Routes>
+        <Route path="/users" element={<Users />} />
+      </Routes>
+    </Router>
   );
 };
 
