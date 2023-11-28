@@ -16,7 +16,6 @@ const Blog = ({ blog, like, canRemove, remove }) => {
   return (
     <div style={style} className="blog">
       {blog.title} {blog.author}
-
     </div>
   );
 };

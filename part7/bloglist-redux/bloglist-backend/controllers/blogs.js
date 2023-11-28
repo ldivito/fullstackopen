@@ -36,6 +36,20 @@ router.post("/", userExtractor, async (request, response) => {
   response.status(201).json(createdBlog);
 });
 
+router.put("/:id/comments", async (request, response) => {
+  const { comment } = request.body;
+
+  let updatedBlog = await Blog.findByIdAndUpdate(
+    request.params.id,
+    { $push: { comments: comment } },
+    { new: true },
+  );
+
+  updatedBlog = await Blog.findById(updatedBlog._id).populate("user");
+
+  response.json(updatedBlog);
+});
+
 router.put("/:id", async (request, response) => {
   const { title, url, author, likes } = request.body;
 

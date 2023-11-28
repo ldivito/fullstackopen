@@ -121,6 +121,12 @@ export const BlogDetails = () => {
         <button onClick={() => like(blog)}>like</button>
       </div>
       <div>added by {blog.user.username}</div>
+      <h3>comments</h3>
+      <ul>
+        {blog.comments.map((comment, index) => (
+          <li key={index}>{comment}</li>
+        ))}
+      </ul>
     </div>
   );
 }
