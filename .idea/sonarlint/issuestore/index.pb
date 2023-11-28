@@ -119,3 +119,7 @@ r
 Bpart7/bloglist-redux/bloglist-frontend/src/components/Togglable.js,6\1\61b5d9b22bf6b797da47b0ae3b95126d15c73530
 h
 8part7/bloglist-redux/bloglist-frontend/src/services/user,4\6\469db7f41e79527b81820b8ea930fda17622d43a
+z
+Jpart7/bloglist-redux/bloglist-frontend/src/reducers/notificationReducer.js,b\1\b127618446d27f7abda397b6c0f1f3e4290d5fa1
+c
+3part7/bloglist-redux/bloglist-frontend/src/store.js,2\9\2908bfd6ac40f4d62b7d2dc7d4d280a6451ffbb9

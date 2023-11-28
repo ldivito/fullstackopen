@@ -19,11 +19,11 @@ module.exports = {
   'rules': {
     'indent': [
       'error',
-      2
+      'tab'
     ],
     'linebreak-style': [
       'error',
-      'unix'
+      'windows'
     ],
     'quotes': [
       'error',
@@ -32,6 +32,7 @@ module.exports = {
     'semi': [
       'error',
       'never'
-    ]
+    ],
+    'react/prop-types': 'off',
   }
 }
