@@ -24,7 +24,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { setNotificationTimeout } from "./reducers/notificationReducer";
 import {
   BrowserRouter as Router,
-  Routes, Route
+  Routes, Route, useParams, Link
 } from 'react-router-dom'
 
 export const Users = () => {
@@ -50,12 +50,43 @@ export const Users = () => {
         <tbody>
           {users.map((user) => (
             <tr key={user.id}>
-              <td>{user.username}</td>
+              <td><Link to={`/users/${user.id}`}>{user.username}</Link></td>
               <td>{user.blogs.length}</td>
             </tr>
           ))}
         </tbody>
       </table>
+    </div>
+  );
+}
+
+export const User = () => {
+  const id = useParams().id;
+
+  const dispatch = useDispatch();
+  const users = useSelector((state) => state.users);
+  const user = users.find((user) => user.id === id);
+
+  useEffect(() => {
+    usersService.getAll().then((users) => {
+      dispatch(setUsers(users));
+    })
+  }
+  , []);
+
+  if (!user) {
+    return null;
+  }
+
+  return (
+    <div>
+      <h2>{user.username}</h2>
+      <h3>added blogs</h3>
+      <ul>
+        {user.blogs.map((blog) => (
+          <li key={blog.id}>{blog.title}</li>
+        ))}
+      </ul>
     </div>
   );
 }
@@ -189,6 +220,7 @@ export const App = () => {
 
       <Routes>
         <Route path="/users" element={<Users />} />
+        <Route path="/users/:id" element={<User />} />
       </Routes>
     </Router>
   );
