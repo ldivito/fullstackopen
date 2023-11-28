@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import Blog from "./components/Blog";
 import blogService from "./services/blogs";
 import {
@@ -9,6 +9,8 @@ import {
 } from "./reducers/blogReducer";
 import loginService from "./services/login";
 import storageService from "./services/storage";
+
+import { setUsers } from "./reducers/userReducer";
 
 import LoginForm from "./components/LoginForm";
 import NewBlog from "./components/NewBlog";
@@ -22,13 +24,13 @@ const App = () => {
   const dispatch = useDispatch();
 
   const blogs = useSelector((state) => state.blogs);
-  const [user, setUser] = useState("");
+  const users = useSelector((state) => state.users);
 
   const blogFormRef = useRef();
 
   useEffect(() => {
     const user = storageService.loadUser();
-    setUser(user);
+    dispatch(setUsers(user));
   }, []);
 
   useEffect(() => {
@@ -41,7 +43,7 @@ const App = () => {
   const login = async (username, password) => {
     try {
       const user = await loginService.login({ username, password });
-      setUser(user);
+      dispatch(setUsers(user));
       storageService.saveUser(user);
       dispatch(
         setNotificationTimeout(5, {
@@ -60,7 +62,7 @@ const App = () => {
   };
 
   const logout = async () => {
-    setUser(null);
+    dispatch(setUsers(null));
     storageService.removeUser();
     dispatch(
       setNotificationTimeout(5, {
@@ -110,7 +112,7 @@ const App = () => {
     }
   };
 
-  if (!user) {
+  if (!users) {
     return (
       <div>
         <h2>log in to application</h2>
@@ -125,7 +127,7 @@ const App = () => {
       <h2>blogs</h2>
       <Notification />
       <div>
-        {user.name} logged in
+        {users.name} logged in
         <button onClick={logout}>logout</button>
       </div>
       <Togglable buttonLabel="new note" ref={blogFormRef}>
@@ -138,7 +140,7 @@ const App = () => {
             blog={blog}
             like={like}
             remove={remove}
-            user={user}
+            user={users}
           />
         ))}
       </div>
