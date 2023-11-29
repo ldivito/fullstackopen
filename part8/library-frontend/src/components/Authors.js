@@ -77,9 +77,11 @@ const Authors = () => {
       <form onSubmit={submit}>
         <div>
           name
-          <input
-            name='name'
-          />
+          <select name='name'>
+            {authors.map(a =>
+              <option key={a.name} value={a.name}>{a.name}</option>
+            )}
+          </select>
         </div>
         <div>
           born
