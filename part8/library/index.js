@@ -76,6 +76,15 @@ const resolvers = {
 		addBook: async (root, args) => {
 			const author = await Author.findOne({ name: args.author })
 			if (!author) {
+				// Check if new author name is at least 4 characters long
+				if (args.author.length < 4) {
+					throw new GraphQLError('Author name must be at least 4 characters long', {
+						extensions: {
+							code: 'BAD_USER_INPUT'
+						}
+					})
+				}
+
 				const newAuthor = new Author({ name: args.author })
 				try {
 					await newAuthor.save()
@@ -89,6 +98,15 @@ const resolvers = {
 				}
 			}
 			const book = new Book({ ...args, author: author })
+
+			if (args.title.length < 5) {
+				throw new GraphQLError('Book title must be at least 5 characters long', {
+					extensions: {
+						code: 'BAD_USER_INPUT'
+					}
+				})
+			}
+
 			try {
 				const savedBook = await book.save()
 				return savedBook
