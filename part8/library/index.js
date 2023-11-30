@@ -1,6 +1,5 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
-const { v1: uuid } = require('uuid')
 const mongoose = require('mongoose')
 mongoose.set('strictQuery', false)
 const Book = require('./models/book')
@@ -34,7 +33,6 @@ const typeDefs = `
 		bookCount: Int
 		born: Int
 	}
-	
 	type Mutation {
 		addBook(
 			title: String!
@@ -47,39 +45,27 @@ const typeDefs = `
 			setBornTo: Int!
 		): Author
 	}
-	
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks(author: String, genres: String): [Book!]!
+    allBooks: [Book!]!
     allAuthors: [Author!]!
-    editAuthor(name: String!, setBornTo: Int!): Author
   }
 `
 
 const resolvers = {
 	Query: {
-		/*bookCount: () => books.length,
-		authorCount: () => authors.length,
-		allBooks: (root, args) => {
-			if (args.author && args.genres) {
-				return books.filter(
-					b =>
-						b.author === args.author &&
-						b.genres.includes(args.genres)
-				)
-			}
-			if (args.genres) {
-				return books.filter(b => b.genres.includes(args.genres))
-			}
-			if (args.author) {
-				return books.filter(b => b.author === args.author)
-			}
+		bookCount: async () => Book.collection.countDocuments(),
+		authorCount: async () => Author.collection.countDocuments(),
+		allBooks: async () => {
+			const books = await Book.find({})
 			return books
 		},
-		allAuthors: () => authors,*/
+		allAuthors: async () => {
+			const authors = await Author.find({})
+			return authors
+		}
 	},
-
 	Author : {
 		bookCount: (root) => {
 			const books = Book.find({ author: root._id })
@@ -102,7 +88,6 @@ const resolvers = {
 					})
 				}
 			}
-
 			const book = new Book({ ...args, author: author })
 			try {
 				const savedBook = await book.save()
@@ -116,14 +101,23 @@ const resolvers = {
 				})
 			}
 		},
-		/*
-		editAuthor: (root, args) => {
-			const author = authors.find(a => a.name === args.name)
-			if (!author) return null
-			const updatedAuthor = { ...author, born: args.setBornTo }
-			authors = authors.map(a => (a.name === args.name ? updatedAuthor : a))
-			return updatedAuthor
-		},*/
+		editAuthor: async (root, args) => {
+			const author = await Author.findOne({ name: args.name })
+			if (!author) {
+				return null
+			}
+			author.born = args.setBornTo
+			try {
+				await author.save()
+			}
+			catch (error) {
+				throw new GraphQLError(error.message, {
+					extensions: {
+						code: 'BAD_USER_INPUT'
+					}
+				})
+			}
+		},
 	},
 }
 
