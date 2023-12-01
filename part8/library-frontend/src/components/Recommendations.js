@@ -37,9 +37,6 @@ const Recommendatios = () => {
 		return <div>loading...</div>
 	}
 
-	console.log('userGenres', userGenres)
-	console.log('dataBooks', dataBooks)
-
 	return (
 		<div>
 			<h2>recommendations</h2>

@@ -117,7 +117,7 @@ const resolvers = {
 	},
 	Mutation: {
 		addBook: async (root, args, context) => {
-			const author = await Author.findOne({ name: args.author })
+			let author = await Author.findOne({ name: args.author });
 			const currentUser = context.currentUser
 
 			if (!currentUser) {
@@ -138,9 +138,9 @@ const resolvers = {
 					})
 				}
 
-				const newAuthor = new Author({ name: args.author })
+				author = new Author({ name: args.author });
 				try {
-					await newAuthor.save()
+					await author.save();
 				}
 				catch (error) {
 					throw new GraphQLError(error.message, {
