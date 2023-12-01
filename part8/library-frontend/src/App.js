@@ -36,6 +36,16 @@ const ALL_BOOKS = gql`
   ${BOOK_DETAILS}
 `
 
+const ALL_AUTHORS = gql`
+  query {
+    allAuthors {
+      name
+      born
+      bookCount
+    }
+  }
+`
+
 const App = () => {
   const [token, setToken] = useState(null)
   const client = useApolloClient()
@@ -53,6 +63,17 @@ const App = () => {
           allBooks: [...dataInStore.allBooks, subscriptionData.data.bookAdded]
         }
       })
+
+      // Update cache for author
+      const authorDataInStore = client.readQuery({ query: ALL_AUTHORS })
+      client.writeQuery({
+        query: ALL_AUTHORS,
+        data: {
+          ...authorDataInStore,
+          allAuthors: [...authorDataInStore.allAuthors, subscriptionData.data.bookAdded.author]
+        }
+      })
+
     }
   })
 

@@ -23,7 +23,7 @@ const resolvers = {
 			return books
 		},
 		allAuthors: async () => {
-			const authors = await Author.find({})
+			const authors = await Author.find({}).populate('books')
 			return authors
 		},
 		allGenres: async () => {
@@ -42,8 +42,11 @@ const resolvers = {
 	},
 	Author : {
 		bookCount: async (root) => {
+			/*
 			const books = await Book.find({ author: root._id })
 			return books.length
+			*/
+			return root.books.length
 		}
 	},
 	Mutation: {
@@ -75,6 +78,8 @@ const resolvers = {
 				author = new Author({ name: args.author });
 				try {
 					await author.save();
+
+					pubsub.publish('AUTHOR_ADDED', { authorAdded: author })
 				}
 				catch (error) {
 					throw new GraphQLError(error.message, {
@@ -98,6 +103,10 @@ const resolvers = {
 
 			try {
 				const savedBook = await book.save()
+
+				author.books = author.books.concat(savedBook._id)
+				await author.save()
+
 				pubsub.publish('BOOK_ADDED', { bookAdded: savedBook })
 				return savedBook
 			}
@@ -171,6 +180,9 @@ const resolvers = {
 	Subscription: {
 		bookAdded: {
 			subscribe: () => pubsub.asyncIterator(['BOOK_ADDED'])
+		},
+		authorAdded: {
+			subscribe: () => pubsub.asyncIterator(['AUTHOR_ADDED'])
 		}
 	}
 }
