@@ -49,6 +49,8 @@ const resolvers = {
 	Mutation: {
 		addBook: async (root, args, context) => {
 			let author = await Author.findOne({ name: args.author });
+
+			/*
 			const currentUser = context.currentUser
 
 			if (!currentUser) {
@@ -58,6 +60,7 @@ const resolvers = {
 					}
 				})
 			}
+			*/
 
 			if (!author) {
 				// Check if new author name is at least 4 characters long
