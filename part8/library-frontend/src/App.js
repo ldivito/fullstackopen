@@ -5,11 +5,38 @@ import NewBook from './components/NewBook'
 import Login from './components/Login'
 import Recommendations from './components/Recommendations'
 import { BrowserRouter as Router, Route, Link, Routes } from 'react-router-dom'
-import {useApolloClient} from "@apollo/client";
+import {gql, useApolloClient} from "@apollo/client";
+import { useQuery, useMutation, useSubscription } from '@apollo/client'
+
+let BOOK_DETAILS = gql`
+  fragment BookDetails on Book {
+    title
+    published
+    author {
+      name
+    }
+    genres
+  }
+`
+const BOOK_ADDED = gql`
+  subscription {
+    bookAdded {
+      ...BookDetails
+    }
+  }
+  ${BOOK_DETAILS}
+`
 
 const App = () => {
   const [token, setToken] = useState(null)
   const client = useApolloClient()
+
+  useSubscription(BOOK_ADDED, {
+    onSubscriptionData: ({ subscriptionData }) => {
+      console.log(subscriptionData)
+      window.alert(`New book added: ${subscriptionData.data.bookAdded.title}`)
+    }
+  })
 
   // Check if user is logged in
   if (!token && localStorage.getItem('library-user-token')) {
