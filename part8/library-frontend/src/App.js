@@ -27,14 +27,32 @@ const BOOK_ADDED = gql`
   ${BOOK_DETAILS}
 `
 
+const ALL_BOOKS = gql`
+  query {
+    allBooks {
+      ...BookDetails
+    }
+  }
+  ${BOOK_DETAILS}
+`
+
 const App = () => {
   const [token, setToken] = useState(null)
   const client = useApolloClient()
 
   useSubscription(BOOK_ADDED, {
     onSubscriptionData: ({ subscriptionData }) => {
-      console.log(subscriptionData)
       window.alert(`New book added: ${subscriptionData.data.bookAdded.title}`)
+
+      // Update cache
+      const dataInStore = client.readQuery({ query: ALL_BOOKS })
+      client.writeQuery({
+        query: ALL_BOOKS,
+        data: {
+          ...dataInStore,
+          allBooks: [...dataInStore.allBooks, subscriptionData.data.bookAdded]
+        }
+      })
     }
   })
 
