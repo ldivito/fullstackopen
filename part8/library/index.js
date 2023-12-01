@@ -70,8 +70,9 @@ const typeDefs = `
   type Query {
     bookCount: Int!
     authorCount: Int!
-    allBooks: [Book!]!
+    allBooks(genres: String): [Book!]!
     allAuthors: [Author!]!
+    allGenres: [String!]!
   }
 `
 
@@ -79,13 +80,30 @@ const resolvers = {
 	Query: {
 		bookCount: async () => Book.collection.countDocuments(),
 		authorCount: async () => Author.collection.countDocuments(),
-		allBooks: async () => {
+		allBooks: async (root, args) => {
+			// If a genre is specified, return books of that genre
+			if (args.genres) {
+				const books = await Book.find({ genres: { $in: [args.genres] } }).populate('author')
+				return books
+			}
+
+			// If no genre is specified, return all books
 			const books = await Book.find({}).populate('author')
 			return books
 		},
 		allAuthors: async () => {
 			const authors = await Author.find({})
 			return authors
+		},
+		allGenres: async () => {
+			const books = await Book.find({})
+			const genres = books.reduce((acc, book) => {
+				book.genres.forEach(genre => {
+					acc.add(genre)
+				})
+				return acc
+			}, new Set())
+			return Array.from(genres)
 		},
 		me: (root, args, context) => {
 			return context.currentUser
