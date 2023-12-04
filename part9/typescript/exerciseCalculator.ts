@@ -36,7 +36,7 @@ const exerciseCalculator = (target: number, hours: Array<number>): Result => {
 }
 
 
-const target = 12;
-const hours = [3, 0, 2, 4.5, 0, 3, 1];
+const target = Number(process.argv[2]);
+const hours = process.argv.slice(3).map(h => Number(h));
 
 console.log(exerciseCalculator(target, hours));
