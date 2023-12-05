@@ -1,6 +1,4 @@
-
-
-const bmiCalculator = (args: { height: number, weight: number }): string => {
+export const bmiCalculator = (args: { height: number, weight: number }): string => {
     const bmi = args.weight / Math.pow(args.height / 100, 2);
     if (bmi < 18.5) {
         return 'Underweight';
