@@ -15,10 +15,10 @@ interface Result {
     average: number
 }
 
-const exerciseCalculator = (target: number, hours: Array<number>): Result => {
+export const exerciseCalculator = (target: number, hours: Array<number>): Result => {
     const periodLength = hours.length;
     const trainingDays = hours.filter(h => h > 0).length;
-    const average = hours.reduce((a, b) => a + b) / periodLength;
+    const average = hours.reduce((a, b) => a + b, 0) / periodLength;
     const success = average >= target;
     const rating = average >= target ? 3 : average >= target / 2 ? 2 : 1;
     const ratingDescription = rating === 3 ? 'good' : rating === 2 ? 'not too bad but could be better' : 'bad';
