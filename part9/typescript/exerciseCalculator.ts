@@ -33,7 +33,7 @@ const exerciseCalculator = (target: number, hours: Array<number>): Result => {
         target: targetHours,
         average
     };
-}
+};
 
 
 const target = Number(process.argv[2]);
